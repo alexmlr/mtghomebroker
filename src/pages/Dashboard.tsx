@@ -64,49 +64,102 @@ export const Dashboard: React.FC = () => {
             setLoading(false);
         }
     };
+    return (
+        <div className="p-6 space-y-6">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="card">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-blue-500/10 rounded-lg text-blue-500">
+                            <Layers size={24} />
+                        </div>
+                        <div>
+                            <p className="text-sm text-[var(--text-secondary)]">Coleções</p>
+                            <p className="text-2xl font-bold">{stats.totalCollections}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="card">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-green-500/10 rounded-lg text-green-500">
+                            <TrendingUp size={24} />
+                        </div>
+                        <div>
+                            <p className="text-sm text-[var(--text-secondary)]">Oportunidades</p>
+                            <p className="text-2xl font-bold">{stats.totalOpportunities}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="card">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-purple-500/10 rounded-lg text-purple-500">
+                            <DollarSign size={24} />
+                        </div>
+                        <div>
+                            <p className="text-sm text-[var(--text-secondary)]">Dólar (USD)</p>
+                            <p className="text-2xl font-bold">R$ {stats.usdRate.toFixed(2)}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="card">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-indigo-500/10 rounded-lg text-indigo-500">
+                            <DollarSign size={24} />
+                        </div>
+                        <div>
+                            <p className="text-sm text-[var(--text-secondary)]">Euro (EUR)</p>
+                            <p className="text-2xl font-bold">R$ {stats.eurRate.toFixed(2)}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Top Opportunities Section */}
+            <div className="card">
+                <div className="flex justify-between items-center mb-6">
                     <h2 className="text-lg font-bold">Top Oportunidades</h2>
                     <button className="btn btn-secondary text-sm">Ver Todas</button>
-                </div >
+                </div>
 
-    <div className="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Coleção</th>
-                    <th>Preço (USD)</th>
-                    <th>Variação (24h)</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {topOpportunities.length > 0 ? (
-                    topOpportunities.map((item, index) => (
-                        <tr key={index}>
-                            <td className="font-medium">{item.collection}</td>
-                            <td>${item.price_usd}</td>
-                            <td className={item.variation_percentage >= 0 ? 'text-[var(--success)]' : 'text-[var(--danger)]'}>
-                                {item.variation_percentage > 0 ? '+' : ''}{item.variation_percentage}%
-                            </td>
-                            <td>
-                                <span className={`px-2 py-1 rounded-full text-xs font-bold ${item.variation_percentage >= 0
-                                    ? 'bg-[rgba(48,209,88,0.1)] text-[var(--success)]'
-                                    : 'bg-[rgba(255,69,58,0.1)] text-[var(--danger)]'
-                                    }`}>
-                                    {item.variation_percentage >= 0 ? 'Alta' : 'Baixa'}
-                                </span>
-                            </td>
-                        </tr>
-                    ))
-                ) : (
-                    <tr>
-                        <td colSpan={4} className="text-center py-8 text-[var(--text-secondary)]">
-                            Nenhuma oportunidade encontrada no momento.
-                        </td>
-                    </tr>
-                )}
-            </tbody>
-        </table>
-    </div>
+                <div className="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Coleção</th>
+                                <th>Preço (USD)</th>
+                                <th>Variação (24h)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {topOpportunities.length > 0 ? (
+                                topOpportunities.map((item, index) => (
+                                    <tr key={index}>
+                                        <td className="font-medium">{item.collection}</td>
+                                        <td>${item.price_usd}</td>
+                                        <td className={item.variation_percentage >= 0 ? 'text-[var(--success)]' : 'text-[var(--danger)]'}>
+                                            {item.variation_percentage > 0 ? '+' : ''}{item.variation_percentage}%
+                                        </td>
+                                        <td>
+                                            <span className={`px-2 py-1 rounded-full text-xs font-bold ${item.variation_percentage >= 0
+                                                ? 'bg-[rgba(48,209,88,0.1)] text-[var(--success)]'
+                                                : 'bg-[rgba(255,69,58,0.1)] text-[var(--danger)]'
+                                                }`}>
+                                                {item.variation_percentage >= 0 ? 'Alta' : 'Baixa'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={4} className="text-center py-8 text-[var(--text-secondary)]">
+                                        Nenhuma oportunidade encontrada no momento.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div >
         </div >
     );
