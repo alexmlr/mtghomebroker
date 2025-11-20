@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --app-bg: #171717;
   --sidebar-bg: #202125;
@@ -349,201 +351,28 @@ body {
 .container .controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-@media (min-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.btn {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid transparent;
-  gap: 8px;
+  gap: 10px;
 }
 
-.btn-primary {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.btn-primary:hover {
-  background-color: #2563eb;
-}
-
-.btn-secondary {
-  background-color: #2a2b30;
-  color: var(--text-primary);
+/* Restored Component Styles */
+.card {
+  background-color: var(--sidebar-bg);
   border: 1px solid var(--border-color);
-}
-
-.btn-secondary:hover {
-  background-color: #3f3f46;
-}
-
-.search-box {
-  position: relative;
-  width: 100%;
-  max-width: 320px;
-}
-
-.search-input,
-input[type="text"],
-input[type="email"],
-input[type="password"],
-select,
-textarea {
-  width: 100%;
-  padding: 10px 16px;
-  background-color: #202125;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  transition: border-color 0.2s;
-}
-
-.search-input:focus,
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-}
-
-.sort-select {
-  width: 200px;
-}
-
-.loading,
-.error {
-  margin-top: 24px;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.loading {
-  color: var(--text-secondary);
-}
-
-.error {
-  color: var(--danger);
-}
-
-/* Tabela */
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-  background-color: #202125;
   border-radius: 12px;
-  border: 1px solid var(--border-color);
-  padding: 8px 8px 4px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s ease;
+  transform-origin: center center;
 }
 
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+.card:hover {
+  transform: scale(1.01);
 }
 
-th {
-  text-align: left;
-  padding: 10px 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-secondary);
-  border-bottom: 1px solid var(--border-color);
-}
-
-td {
-  padding: 10px 12px;
-  font-size: 0.9rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-tr:last-child td {
-  border-bottom: none;
-}
-
-tbody tr:hover td {
-  background-color: #1f2128;
-}
-
-.table-container a {
-  color: #3b82f6;
-  text-decoration: none;
-}
-
-.table-container a:hover {
-  text-decoration: underline;
-}
-
-/* Paginação */
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.pagination button {
-  padding: 6px 12px;
-  border-radius: 9999px;
-  border: 1px solid var(--border-color);
-  background-color: #202125;
-  color: var(--text-primary);
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.pagination button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.pagination button:not(:disabled):hover {
-  background-color: #2a2b30;
-}
-
-margin: 0 auto;
-padding: 0;
-}
-
-.container>header {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.container>header h1 {
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-.container .controls {
-  display: flex;
-  flex-wrap: wrap;
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
   gap: 24px;
   margin-bottom: 32px;
 }
@@ -725,25 +554,18 @@ tbody tr:hover td {
   color: var(--text-secondary);
 }
 
-.icon-wrapper {
+.p-3.rounded-full {
+  background-color: #bca36f;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-  color: white;
-  transition: transform 0.3s ease;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 
-.card:hover .icon-wrapper {
-  transform: scale(1.1) rotate(-5deg);
-}
-
-.icon-wrapper svg {
+.p-3.rounded-full svg {
   width: 24px;
   height: 24px;
-  stroke-width: 2.5px;
+  color: black;
 }
