@@ -366,7 +366,7 @@ body {
   transform-origin: center center;
 }
 
-.card:hover {
+.grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4.gap-4 .card:hover {
   transform: scale(1.01);
 }
 
@@ -568,4 +568,34 @@ tbody tr:hover td {
   width: 24px;
   height: 24px;
   color: black;
+}
+
+.search-box {
+  position: relative;
+  /* container de referência pro ícone */
+  display: inline-block;
+  /* ou block, se preferir ocupar a linha toda */
+}
+
+/* estilo do input */
+.search-box input {
+  width: 100%;
+  padding: 8px 12px 8px 32px;
+  /* espaço à esquerda pra caber a lupa */
+  border-radius: 8px;
+  border: 1px solid #333;
+  background-color: #111;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+/* posiciona a lupa dentro da "caixa" do input */
+.search-box .search-icon {
+  position: absolute;
+  left: 10px;
+  /* distância da borda esquerda */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  /* não intercepta cliques, o input recebe foco normal */
 }

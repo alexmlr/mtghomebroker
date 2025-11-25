@@ -23,26 +23,27 @@ export const Dashboard: React.FC = () => {
             // 1. Get Distinct Collections Count
             // Fetch all collections to count unique names client-side (or use a distinct query if supported)
             const { data: allCollections } = await supabase
-                .from('ck_price_history')
-                .select('collection');
+                .from('cards')
+                .select('set_name');
 
             let uniqueCollectionsCount = 0;
             if (allCollections) {
-                const uniqueCollections = new Set(allCollections.map(item => item.collection));
+                const uniqueCollections = new Set(allCollections.map(item => item.set_name));
                 uniqueCollectionsCount = uniqueCollections.size;
             }
 
-            // 2. Get Opportunities Count (mock logic for now)
+            // 2. Get Opportunities Count (mock logic for now as variation_percentage is missing)
+            // We'll just count cards with high buy price for now as a placeholder or 0
             const { count: oppCount } = await supabase
-                .from('ck_price_history')
+                .from('cards')
                 .select('*', { count: 'exact', head: true })
-                .gt('variation_percentage', 0);
+                .gt('ck_buy_usd', 50); // Example threshold for "opportunity"
 
-            // 3. Get Top Opportunities
+            // 3. Get Top Opportunities (Now Top Expensive Cards)
             const { data: opps } = await supabase
-                .from('ck_price_history')
+                .from('cards')
                 .select('*')
-                .order('variation_percentage', { ascending: false })
+                .order('ck_buy_usd', { ascending: false })
                 .limit(5);
 
             // 4. Mock Currency Rates (In a real app, fetch from an API)
@@ -117,7 +118,7 @@ export const Dashboard: React.FC = () => {
             {/* Top Opportunities Section */}
             <div className="card">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-lg font-bold">Top Oportunidades</h2>
+                    <h2 className="text-lg font-bold">Top Cartas (USD)</h2>
                     <button className="btn btn-secondary text-sm">Ver Todas</button>
                 </div>
 
@@ -126,8 +127,8 @@ export const Dashboard: React.FC = () => {
                         <thead>
                             <tr>
                                 <th>Coleção</th>
+                                <th>Nome</th>
                                 <th>Preço (USD)</th>
-                                <th>Variação (24h)</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -135,17 +136,12 @@ export const Dashboard: React.FC = () => {
                             {topOpportunities.length > 0 ? (
                                 topOpportunities.map((item, index) => (
                                     <tr key={index}>
-                                        <td className="font-medium">{item.collection}</td>
-                                        <td>${item.price_usd}</td>
-                                        <td className={item.variation_percentage >= 0 ? 'text-[var(--success)]' : 'text-[var(--danger)]'}>
-                                            {item.variation_percentage > 0 ? '+' : ''}{item.variation_percentage}%
-                                        </td>
+                                        <td className="font-medium">{item.set_name}</td>
+                                        <td>{item.name}</td>
+                                        <td>${item.ck_buy_usd}</td>
                                         <td>
-                                            <span className={`px-2 py-1 rounded-full text-xs font-bold ${item.variation_percentage >= 0
-                                                ? 'bg-[rgba(48,209,88,0.1)] text-[var(--success)]'
-                                                : 'bg-[rgba(255,69,58,0.1)] text-[var(--danger)]'
-                                                }`}>
-                                                {item.variation_percentage >= 0 ? 'Alta' : 'Baixa'}
+                                            <span className="px-2 py-1 rounded-full text-xs font-bold bg-[rgba(48,209,88,0.1)] text-[var(--success)]">
+                                                Alta
                                             </span>
                                         </td>
                                     </tr>
@@ -153,7 +149,7 @@ export const Dashboard: React.FC = () => {
                             ) : (
                                 <tr>
                                     <td colSpan={4} className="text-center py-8 text-[var(--text-secondary)]">
-                                        Nenhuma oportunidade encontrada no momento.
+                                        Nenhuma carta encontrada no momento.
                                     </td>
                                 </tr>
                             )}
