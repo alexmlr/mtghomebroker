@@ -1,0 +1,88 @@
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import { useAuth } from '../contexts/AuthContext';
+
+export const useTracking = () => {
+    const { user } = useAuth();
+    const [trackedCardIds, setTrackedCardIds] = useState<Set<number>>(new Set());
+    const [trackedSetCodes, setTrackedSetCodes] = useState<Set<string>>(new Set());
+    const [loading, setLoading] = useState(true);
+
+    const fetchTrackedItems = useCallback(async () => {
+        if (!user) return;
+        try {
+            const [cardsRes, setsRes] = await Promise.all([
+                supabase.from('user_tracked_cards').select('card_id'),
+                supabase.from('user_tracked_sets').select('set_code')
+            ]);
+
+            if (cardsRes.error) throw cardsRes.error;
+            if (setsRes.error) throw setsRes.error;
+
+            setTrackedCardIds(new Set(cardsRes.data.map(i => i.card_id)));
+            setTrackedSetCodes(new Set(setsRes.data.map(i => i.set_code)));
+        } catch (error) {
+            console.error('Error fetching tracked items:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [user]);
+
+    useEffect(() => {
+        fetchTrackedItems();
+    }, [fetchTrackedItems]);
+
+    const toggleTrackCard = async (cardId: number) => {
+        if (!user) return;
+        const isTracked = trackedCardIds.has(cardId);
+
+        // Optimistic update
+        const newSet = new Set(trackedCardIds);
+        if (isTracked) newSet.delete(cardId);
+        else newSet.add(cardId);
+        setTrackedCardIds(newSet);
+
+        try {
+            if (isTracked) {
+                await supabase.from('user_tracked_cards').delete().eq('user_id', user.id).eq('card_id', cardId);
+            } else {
+                await supabase.from('user_tracked_cards').insert({ user_id: user.id, card_id: cardId });
+            }
+        } catch (error) {
+            console.error('Error toggling card track:', error);
+            // Revert on error
+            fetchTrackedItems();
+        }
+    };
+
+    const toggleTrackSet = async (setCode: string) => {
+        if (!user) return;
+        const isTracked = trackedSetCodes.has(setCode);
+
+        // Optimistic update
+        const newSet = new Set(trackedSetCodes);
+        if (isTracked) newSet.delete(setCode);
+        else newSet.add(setCode);
+        setTrackedSetCodes(newSet);
+
+        try {
+            if (isTracked) {
+                await supabase.from('user_tracked_sets').delete().eq('user_id', user.id).eq('set_code', setCode);
+            } else {
+                await supabase.from('user_tracked_sets').insert({ user_id: user.id, set_code: setCode });
+            }
+        } catch (error) {
+            console.error('Error toggling set track:', error);
+            // Revert on error
+            fetchTrackedItems();
+        }
+    };
+
+    return {
+        trackedCardIds,
+        trackedSetCodes,
+        toggleTrackCard,
+        toggleTrackSet,
+        loading
+    };
+};

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { TrendingUp, DollarSign, Layers } from 'lucide-react';
+import { useTracking } from '../hooks/useTracking';
+import { TrackButton } from '../components/TrackButton';
 
 export const Dashboard: React.FC = () => {
     const [, setLoading] = useState(true);
@@ -11,6 +13,9 @@ export const Dashboard: React.FC = () => {
         eurRate: 0
     });
     const [topOpportunities, setTopOpportunities] = useState<any[]>([]);
+
+    // Tracking
+    const { trackedCardIds, trackedSetCodes, toggleTrackCard, toggleTrackSet } = useTracking();
 
     useEffect(() => {
         fetchDashboardData();
@@ -135,9 +140,33 @@ export const Dashboard: React.FC = () => {
                         <tbody>
                             {topOpportunities.length > 0 ? (
                                 topOpportunities.map((item, index) => (
-                                    <tr key={index}>
-                                        <td className="font-medium">{item.set_name}</td>
-                                        <td>{item.name}</td>
+                                    <tr key={index} className="group hover:bg-gray-50">
+                                        <td className="font-medium relative">
+                                            <div className="flex items-center gap-2">
+                                                {item.set_name}
+                                                <TrackButton
+                                                    type="set"
+                                                    isTracked={trackedSetCodes.has(item.set_code)}
+                                                    onToggle={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleTrackSet(item.set_code);
+                                                    }}
+                                                />
+                                            </div>
+                                        </td>
+                                        <td className="relative">
+                                            <div className="flex items-center gap-2">
+                                                {item.name}
+                                                <TrackButton
+                                                    type="card"
+                                                    isTracked={trackedCardIds.has(item.id)}
+                                                    onToggle={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleTrackCard(item.id);
+                                                    }}
+                                                />
+                                            </div>
+                                        </td>
                                         <td>${item.ck_buy_usd}</td>
                                         <td>
                                             <span className="px-2 py-1 rounded-full text-xs font-bold bg-[rgba(48,209,88,0.1)] text-[var(--success)]">

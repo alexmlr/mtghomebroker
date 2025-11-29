@@ -17,7 +17,13 @@ interface CardData {
     collector_number_normalized: string;
 }
 
-export const Collections: React.FC = () => {
+interface TrackedTableProps {
+    title: string;
+    viewName: 'my_tracked_cards_view' | 'my_tracked_sets_view';
+    emptyMessage: string;
+}
+
+const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessage }) => {
     const [data, setData] = useState<CardData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -34,35 +40,35 @@ export const Collections: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [pageInput, setPageInput] = useState('1');
-    const itemsPerPage = 50;
+    const itemsPerPage = 20; // Reduced items per page since we have two tables
 
     // Debounce search
     const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // Fetch sets on mount
+    // Fetch sets for this specific view
     useEffect(() => {
         const fetchSets = async () => {
             try {
-                // Use RPC to get distinct sets efficiently
-                const { data, error } = await supabase.rpc('get_distinct_sets');
+                const { data, error } = await supabase
+                    .from(viewName)
+                    .select('set_name');
 
                 if (error) throw error;
 
                 if (data) {
-                    // data is already an array of objects { set_name: 'Name' }
-                    const uniqueSets = data.map((item: any) => item.set_name);
+                    const uniqueSets = Array.from(new Set(data.map((item: any) => item.set_name))).sort();
                     setSets(uniqueSets);
                 }
             } catch (err) {
-                console.error('Error fetching sets:', err);
+                console.error(`Error fetching sets for ${viewName}:`, err);
             }
         };
         fetchSets();
-    }, []);
+    }, [viewName, trackedCardIds, trackedSetCodes]);
 
     useEffect(() => {
         fetchCards(currentPage, searchTerm, sortConfig, selectedSet);
-    }, [currentPage, sortConfig, selectedSet]); // Fetch when page, sort or set changes
+    }, [currentPage, sortConfig, selectedSet, trackedCardIds, trackedSetCodes, viewName]);
 
     // Handle search with debounce
     useEffect(() => {
@@ -73,7 +79,7 @@ export const Collections: React.FC = () => {
         searchTimeoutRef.current = setTimeout(() => {
             setCurrentPage(1); // Reset to page 1 on search
             fetchCards(1, searchTerm, sortConfig, selectedSet);
-        }, 500); // 500ms debounce
+        }, 500);
 
         return () => {
             if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
@@ -85,7 +91,7 @@ export const Collections: React.FC = () => {
         setError(null);
         try {
             let query = supabase
-                .from('cards')
+                .from(viewName)
                 .select('id, name, set_name, set_code, collector_number_normalized, imported_at, ck_buy_usd, lm_sell_brl', { count: 'exact' });
 
             // Set Filter
@@ -95,14 +101,11 @@ export const Collections: React.FC = () => {
 
             // Search
             if (search) {
-                // Use .or() to search in name OR set_name
                 query = query.or(`name.ilike.%${search}%,set_name.ilike.%${search}%`);
             }
 
             // Sorting
             if (sort.key === 'ck_buy_credit') {
-                // We can't sort by calculated column on server easily without a computed column or function.
-                // Fallback: sort by ck_buy_usd since credit is just a multiplier of it.
                 query = query.order('ck_buy_usd', { ascending: sort.direction === 'asc' });
             } else {
                 query = query.order(sort.key, { ascending: sort.direction === 'asc' });
@@ -122,8 +125,8 @@ export const Collections: React.FC = () => {
             setPageInput(page.toString());
 
         } catch (err: any) {
-            console.error('Error fetching cards:', err);
-            setError('Erro ao carregar dados. Verifique sua conexão ou as credenciais.');
+            console.error(`Error fetching cards for ${viewName}:`, err);
+            setError('Erro ao carregar dados.');
         } finally {
             setLoading(false);
         }
@@ -143,7 +146,6 @@ export const Collections: React.FC = () => {
             if (!isNaN(page) && page >= 1 && page <= Math.ceil(totalCount / itemsPerPage)) {
                 setCurrentPage(page);
             } else {
-                // Reset input to current page if invalid
                 setPageInput(currentPage.toString());
             }
         }
@@ -168,11 +170,11 @@ export const Collections: React.FC = () => {
     };
 
     return (
-        <div>
+        <div className="mb-8">
             <div className="flex flex-col md:flex-row items-start md:items-center mb-4 gap-4">
+                <h2 className="font-bold text-xl" style={{ marginRight: 'auto' }}>{title}</h2>
 
                 <div className="flex items-center gap-2 w-full md:w-auto">
-                    {/* Set Filter Dropdown */}
                     <select
                         className="input"
                         style={{ maxWidth: '200px' }}
@@ -212,7 +214,7 @@ export const Collections: React.FC = () => {
                 {loading ? (
                     <div className="flex flex-col items-center justify-center" style={{ padding: '3rem' }}>
                         <Loader2 className="animate-spin mb-2" size={32} />
-                        <p className="text-secondary">Carregando cartas...</p>
+                        <p className="text-secondary">Carregando...</p>
                     </div>
                 ) : (
                     <>
@@ -281,7 +283,7 @@ export const Collections: React.FC = () => {
                                     ) : (
                                         <tr>
                                             <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
-                                                Nenhuma carta encontrada.
+                                                {emptyMessage}
                                             </td>
                                         </tr>
                                     )}
@@ -328,6 +330,26 @@ export const Collections: React.FC = () => {
                     </>
                 )}
             </div>
+        </div>
+    );
+};
+
+export const MyList: React.FC = () => {
+    return (
+        <div>
+            <TrackedTable
+                title="Cartas que eu acompanho"
+                viewName="my_tracked_cards_view"
+                emptyMessage="Você não está acompanhando nenhuma carta individualmente."
+            />
+
+            <div className="h-8"></div> {/* Spacer */}
+
+            <TrackedTable
+                title="Coleções que eu acompanho"
+                viewName="my_tracked_sets_view"
+                emptyMessage="Você não está acompanhando nenhuma coleção."
+            />
         </div>
     );
 };

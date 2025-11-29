@@ -8,6 +8,7 @@ import {
   User,
   LogOut,
   Menu,
+  List,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
@@ -69,6 +70,7 @@ export const MainLayout: React.FC = () => {
 
   const navItems = [
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/minha-lista', label: 'Minha Lista', icon: List },
     { path: '/colecoes', label: 'Coleções', icon: Layers },
     { path: '/oportunidades', label: 'Oportunidades', icon: TrendingUp },
     { path: '/configuracoes', label: 'Configurações', icon: Settings },

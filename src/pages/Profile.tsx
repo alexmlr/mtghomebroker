@@ -108,8 +108,6 @@ export const Profile: React.FC = () => {
 
     return (
         <div style={{ maxWidth: '42rem', margin: '0 auto' }}>
-            <h1 className="font-bold mb-4" style={{ fontSize: '1.5rem' }}>Meu Perfil</h1>
-
             <div className="card">
                 {message && (
                     <div style={{

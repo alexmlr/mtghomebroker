@@ -158,8 +158,6 @@ export const Settings: React.FC = () => {
 
     return (
         <div>
-            <h1 className="font-bold mb-4" style={{ fontSize: '1.5rem' }}>Configurações</h1>
-
             {/* Branding Section */}
             <section className="card mb-4">
                 <h2 className="font-bold mb-4" style={{ fontSize: '1.125rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>Personalização</h2>
