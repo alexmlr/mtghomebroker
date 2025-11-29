@@ -51,9 +51,28 @@ export const Dashboard: React.FC = () => {
                 .order('ck_buy_usd', { ascending: false })
                 .limit(5);
 
-            // 4. Mock Currency Rates (In a real app, fetch from an API)
-            const usd = 5.05;
-            const eur = 5.45;
+            // 4. Fetch Real-time Currency Rates from exchangerate-api.com
+            let usd = 5.34;  // Fallback value
+            let eur = 6.19;  // Fallback value
+
+            try {
+                // Fetch USD -> BRL
+                const usdResponse = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                const usdData = await usdResponse.json();
+                if (usdData.rates && usdData.rates.BRL) {
+                    usd = usdData.rates.BRL;
+                }
+
+                // Fetch EUR -> BRL
+                const eurResponse = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
+                const eurData = await eurResponse.json();
+                if (eurData.rates && eurData.rates.BRL) {
+                    eur = eurData.rates.BRL;
+                }
+            } catch (error) {
+                console.error('Error fetching exchange rates:', error);
+                // Uses fallback values if API fails
+            }
 
             setStats({
                 totalCollections: uniqueCollectionsCount,
