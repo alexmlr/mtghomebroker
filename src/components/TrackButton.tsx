@@ -8,7 +8,7 @@ interface TrackButtonProps {
     className?: string;
 }
 
-export const TrackButton: React.FC<TrackButtonProps> = ({ isTracked, onToggle, type, className = '' }) => {
+export const TrackButton: React.FC<TrackButtonProps> = ({ isTracked, onToggle, className = '' }) => {
     return (
         <button
             onClick={onToggle}
