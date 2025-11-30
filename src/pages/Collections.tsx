@@ -15,6 +15,7 @@ interface CardData {
     imported_at: string;
     set_code: string;
     collector_number_normalized: string;
+    collector_number: string;
 }
 
 export const Collections: React.FC = () => {
@@ -86,7 +87,7 @@ export const Collections: React.FC = () => {
         try {
             let query = supabase
                 .from('cards')
-                .select('id, name, set_name, set_code, collector_number_normalized, imported_at, ck_buy_usd, lm_sell_brl', { count: 'exact' });
+                .select('id, name, set_name, set_code, collector_number_normalized, collector_number, imported_at, ck_buy_usd, lm_sell_brl', { count: 'exact' });
 
             // Set Filter
             if (setFilter) {
@@ -226,6 +227,9 @@ export const Collections: React.FC = () => {
                                         <th onClick={() => handleSort('name')}>
                                             <div className="flex items-center gap-2">Nome <ArrowUpDown size={14} /></div>
                                         </th>
+                                        <th onClick={() => handleSort('collector_number')}>
+                                            <div className="flex items-center gap-2">Nº da coleção <ArrowUpDown size={14} /></div>
+                                        </th>
                                         <th onClick={() => handleSort('ck_buy_usd')} title="Preço em USD na Lista de compras na CardKingdom">
                                             <div className="flex items-center gap-2">Compra CK (USD) <ArrowUpDown size={14} /></div>
                                         </th>
@@ -272,6 +276,7 @@ export const Collections: React.FC = () => {
                                                         />
                                                     </div>
                                                 </td>
+                                                <td>{card.collector_number}</td>
                                                 <td>{formatCurrency(card.ck_buy_usd)}</td>
                                                 <td>{formatCurrency(card.ck_buy_usd * 1.3)}</td>
                                                 <td>{formatCurrencyBRL(card.lm_sell_brl)}</td>

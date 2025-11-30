@@ -79,14 +79,34 @@ on conflict (id) do nothing;
 -- Drop policies for branding
 drop policy if exists "Public Access Branding" on storage.objects;
 drop policy if exists "Authenticated users can upload Branding" on storage.objects;
+drop policy if exists "Admins can upload Branding" on storage.objects;
+drop policy if exists "Admins can update Branding" on storage.objects;
+drop policy if exists "Admins can delete Branding" on storage.objects;
 
 create policy "Public Access Branding"
   on storage.objects for select
   using ( bucket_id = 'branding' );
 
-create policy "Authenticated users can upload Branding"
+create policy "Admins can upload Branding"
   on storage.objects for insert
-  with check ( bucket_id = 'branding' and auth.role() = 'authenticated' );
+  with check ( 
+    bucket_id = 'branding' AND 
+    auth.uid() in (select id from public.profiles where role = 'admin')
+  );
+
+create policy "Admins can update Branding"
+  on storage.objects for update
+  using ( 
+    bucket_id = 'branding' AND 
+    auth.uid() in (select id from public.profiles where role = 'admin')
+  );
+
+create policy "Admins can delete Branding"
+  on storage.objects for delete
+  using ( 
+    bucket_id = 'branding' AND 
+    auth.uid() in (select id from public.profiles where role = 'admin')
+  );
 
 -- B) Profile Pictures Bucket (for User Avatars)
 insert into storage.buckets (id, name, public)
