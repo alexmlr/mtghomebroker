@@ -8,6 +8,7 @@ import { Opportunities } from './pages/Opportunities';
 import { Settings } from './pages/Settings';
 import { Profile } from './pages/Profile';
 import { Login } from './pages/Login';
+import { CardDetails } from './pages/CardDetails';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
             <Route path="oportunidades" element={<Opportunities />} />
             <Route path="configuracoes" element={<Settings />} />
             <Route path="perfil" element={<Profile />} />
+            <Route path="carta/:id" element={<CardDetails />} />
           </Route>
         </Routes>
       </Router>

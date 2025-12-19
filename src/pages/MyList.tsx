@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { Search, ArrowUpDown, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -277,7 +278,9 @@ const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessa
                                                 <td className="font-bold relative">
                                                     <div className="flex items-center gap-2">
                                                         <CardPreview set_code={card.set_code} collector_number={card.collector_number_normalized}>
-                                                            <span className="hover:text-blue-400 transition-colors">{card.name}</span>
+                                                            <Link to={`/carta/${card.id}`} className="hover:text-blue-400 transition-colors">
+                                                                {card.name}
+                                                            </Link>
                                                         </CardPreview>
                                                         <TrackButton
                                                             type="card"
