@@ -1,0 +1,4 @@
+
+ALTER TABLE public.cards 
+ADD COLUMN IF NOT EXISTS link_ck TEXT,
+ADD COLUMN IF NOT EXISTS link_lm TEXT;

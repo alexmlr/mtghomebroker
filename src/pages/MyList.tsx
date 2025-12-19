@@ -22,9 +22,10 @@ interface TrackedTableProps {
     title: string;
     viewName: 'my_tracked_cards_view' | 'my_tracked_sets_view';
     emptyMessage: string;
+    onOpenTrackModal?: () => void;
 }
 
-const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessage }) => {
+const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessage, onOpenTrackModal }) => {
     const [data, setData] = useState<CardData[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -173,7 +174,17 @@ const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessa
     return (
         <div className="mb-8">
             <div className="flex flex-col md:flex-row items-start md:items-center mb-4 gap-4">
-                <h2 className="font-bold text-xl" style={{ marginRight: 'auto' }}>{title}</h2>
+                <div className="flex items-center gap-4" style={{ marginRight: 'auto' }}>
+                    <h2 className="font-bold text-xl">{title}</h2>
+                    {onOpenTrackModal && (
+                        <button
+                            onClick={onOpenTrackModal}
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-4 rounded-lg flex items-center gap-2 transition-colors shadow-sm text-sm"
+                        >
+                            + Acompanhar carta
+                        </button>
+                    )}
+                </div>
 
                 <div className="flex items-center gap-2 w-full md:w-auto">
                     <select
@@ -271,8 +282,16 @@ const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessa
                                                         <TrackButton
                                                             type="card"
                                                             isTracked={trackedCardIds.has(card.id)}
-                                                            onToggle={(e) => {
+                                                            onToggle={async (e) => {
                                                                 e.stopPropagation();
+                                                                const isTracked = trackedCardIds.has(card.id);
+                                                                if (isTracked) {
+                                                                    const confirmed = window.confirm(
+                                                                        "Tem certeza que deseja parar de acompanhar esta carta?\n\n" +
+                                                                        "⚠️ Você perderá todo o histórico de preços armazenado até agora para esta carta."
+                                                                    );
+                                                                    if (!confirmed) return;
+                                                                }
                                                                 toggleTrackCard(card.id);
                                                             }}
                                                         />
@@ -339,21 +358,66 @@ const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessa
     );
 };
 
+import { TrackCardModal } from '../components/TrackCardModal';
+
 export const MyList: React.FC = () => {
+    const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
+    const { toggleTrackCard, trackedCardIds } = useTracking(); // We need this to auto-track
+
+    // We can't easily auto-track from here without the ID. 
+    // The Modal handles the API call. We can pass a callback to the Modal that receives the result data!
+
+    const handleTrackSuccess = async (scrapedCards: any[]) => {
+        // Auto-track the new cards
+        let trackedCount = 0;
+
+        for (const card of scrapedCards) {
+            if (card.id) {
+                // Only track if NOT already tracking
+                const isAlreadyTracked = trackedCardIds.has(Number(card.id));
+
+                if (!isAlreadyTracked) {
+                    const result = await toggleTrackCard(card.id);
+                    if (result?.success) {
+                        trackedCount++;
+                    } else if (result?.error) {
+                        console.error(`Erro ao favoritar carta ${card.name}:`, result.error);
+                    }
+                }
+            }
+        }
+
+        if (trackedCount > 0) {
+            alert(`${trackedCount} carta(s) adicionada(s) à sua lista com sucesso!`);
+            window.location.reload();
+        } else {
+            // It might be that we just updated prices for existing cards
+            alert('Preços atualizados! (A carta já estava na sua lista).');
+            window.location.reload();
+        }
+    };
+
     return (
         <div>
             <TrackedTable
                 title="Cartas que eu acompanho"
                 viewName="my_tracked_cards_view"
                 emptyMessage="Você não está acompanhando nenhuma carta individualmente."
+                onOpenTrackModal={() => setIsTrackModalOpen(true)}
             />
 
-            <div className="h-8"></div> {/* Spacer */}
+            <div className="h-8"></div>
 
             <TrackedTable
                 title="Coleções que eu acompanho"
                 viewName="my_tracked_sets_view"
                 emptyMessage="Você não está acompanhando nenhuma coleção."
+            />
+
+            <TrackCardModal
+                isOpen={isTrackModalOpen}
+                onClose={() => setIsTrackModalOpen(false)}
+                onSuccess={(data) => handleTrackSuccess(data)}
             />
         </div>
     );

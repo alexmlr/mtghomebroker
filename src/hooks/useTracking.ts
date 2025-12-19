@@ -44,14 +44,18 @@ export const useTracking = () => {
 
         try {
             if (isTracked) {
-                await supabase.from('user_tracked_cards').delete().eq('user_id', user.id).eq('card_id', cardId);
+                const { error } = await supabase.from('user_tracked_cards').delete().eq('user_id', user.id).eq('card_id', cardId);
+                if (error) throw error;
             } else {
-                await supabase.from('user_tracked_cards').insert({ user_id: user.id, card_id: cardId });
+                const { error } = await supabase.from('user_tracked_cards').insert({ user_id: user.id, card_id: cardId });
+                if (error) throw error;
             }
-        } catch (error) {
+            return { success: true };
+        } catch (error: any) {
             console.error('Error toggling card track:', error);
             // Revert on error
             fetchTrackedItems();
+            return { success: false, error };
         }
     };
 

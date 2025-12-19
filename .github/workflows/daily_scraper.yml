@@ -1,0 +1,42 @@
+name: Daily Card Scraper
+
+on:
+  schedule:
+    # 07:00 Brasilia (GMT-3) = 10:00 UTC
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [scrape_new_card]
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: scraper_ck/package-lock.json
+
+    - name: Install Dependencies
+      working-directory: ./scraper_ck
+      run: npm ci
+
+    - name: Install Playwright Browsers (if needed) or Puppeteer
+      # Puppeteer downloads chrome by default, but in CI we might need dependencies for headless chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 --no-install-recommends
+      continue-on-error: true
+
+    - name: Run Batch Scraper
+      working-directory: ./scraper_ck
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      run: npm run start:batch
