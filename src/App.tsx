@@ -25,7 +25,7 @@ function App() {
           }>
             <Route index element={<Dashboard />} />
             <Route path="minha-lista" element={<MyList />} />
-            <Route path="colecoes" element={<Collections />} />
+            <Route path="lista-de-cartas" element={<Collections />} />
             <Route path="oportunidades" element={<Opportunities />} />
             <Route path="configuracoes" element={<Settings />} />
             <Route path="perfil" element={<Profile />} />

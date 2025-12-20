@@ -87,10 +87,10 @@ export const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="app-root min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* SIDEBAR VERTICAL (Desktop Only) */}
+    <div className="app-root">
+      {/* SIDEBAR VERTICAL */}
       <aside
-        className={`sidebar hidden md:flex ${isSidebarCollapsed ? 'sidebar--collapsed' : 'sidebar--expanded'}`}
+        className={`sidebar ${isSidebarCollapsed ? 'sidebar--collapsed' : 'sidebar--expanded'}`}
       >
         {/* Topo: botão hamburger */}
         <div className="sidebar__top">
@@ -171,55 +171,36 @@ export const MainLayout: React.FC = () => {
         </div>
       </aside>
 
-      {/* MOBILE BOTTOM NAVIGATION (Mobile Only) - Floating Island (Cool Slate/Purple) */}
-      <nav className="fixed bottom-6 left-6 right-6 h-16 z-50 bg-[#09090b]/95 backdrop-blur-xl rounded-full border border-white/10 shadow-2xl flex justify-around items-center md:hidden px-2">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${isActive
-                ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)] transform -translate-y-1'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-white/5 active:scale-95'
-                }`}
-              title={item.label}
-            >
-              <item.icon size={24} className={isActive ? 'stroke-2' : 'stroke-[1.5]'} />
-            </Link>
-          );
-        })}
-      </nav>
-
       {/* ÁREA PRINCIPAL */}
       <main
-        className={`layout-main transition-all duration-300 w-full ml-0 ${isSidebarCollapsed ? 'md:ml-[95px]' : 'md:ml-[256px]'}`}
+        className="layout-main"
+        style={{ marginLeft: isSidebarCollapsed ? 95 : 256 }} // 95px collapsed, 256px expanded
       >
-        {/* HEADER: Ultra compact mobile */}
-        <header className="layout-header h-[50px] md:h-[75px] max-h-[50px] md:max-h-[75px] px-3 md:px-8">
+        {/* HEADER: logo + título, altura máx 75px, full width, não fixa */}
+        <header className="layout-header">
           {systemLogo ? (
-            <img src={systemLogo} alt="Logo" className="layout-header__logo h-6 md:h-10" />
+            <img src={systemLogo} alt="Logo" className="layout-header__logo" />
           ) : (
             <div className="layout-header__logo-fallback">
-              <div className="layout-header__logo-icon w-7 h-7 md:w-8 md:h-8">
-                <LayoutDashboard size={14} />
+              <div className="layout-header__logo-icon">
+                <LayoutDashboard size={18} />
               </div>
-              <span className="layout-header__logo-text text-sm md:text-lg">Boost</span>
+              <span className="layout-header__logo-text">Boost</span>
             </div>
           )}
 
-          <div className="layout-header__divider hidden md:block" />
+          <div className="layout-header__divider" />
 
-          <h1 className="layout-header__title text-sm md:text-2xl">{getPageTitle()}</h1>
+          <h1 className="layout-header__title">{getPageTitle()}</h1>
         </header>
 
-        {/* CONTEÚDO DA PÁGINA - Margens Condicionais */}
-        <div className={`layout-content ${location.pathname === '/' ? 'p-0' : 'p-[10px]'} pb-20 md:p-8 md:pb-8`}>
+        {/* CONTEÚDO DA PÁGINA */}
+        <div className="layout-content">
           <Outlet />
         </div>
 
         {/* RODAPÉ */}
-        <footer className="layout-footer hidden md:block px-8 py-4 text-center text-sm text-gray-400">
+        <footer className="layout-footer">
           <p>{footerText}</p>
         </footer>
       </main>

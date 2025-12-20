@@ -184,25 +184,25 @@ export const CardDetails: React.FC = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto px-2 md:px-4 pb-20 md:pb-8">
+        <div className="max-w-6xl mx-auto px-4">
             {/* Header / Breadcrumb */}
             <button
                 onClick={() => navigate(-1)}
-                className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors mb-3 text-sm"
+                className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-6"
             >
-                <ArrowLeft size={16} /> Voltar
+                <ArrowLeft size={18} /> Voltar
             </button>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-6">
                 {/* Top Section: Title and Set */}
                 <div>
-                    <h1 className="text-2xl md:text-4xl font-extrabold text-white mb-0.5 leading-tight">{card.name}</h1>
-                    <div className="flex items-center gap-2 text-sm md:text-lg text-gray-400">
-                        <span className="font-medium truncate max-w-[200px] md:max-w-none">{card.set_name}</span>
+                    <h1 className="text-4xl font-extrabold text-white mb-1 leading-tight">{card.name}</h1>
+                    <div className="flex items-center gap-2 text-lg text-gray-400">
+                        <span className="font-medium">{card.set_name}</span>
                         <span className="text-gray-600">•</span>
                         <span>#{card.collector_number}</span>
                         {card.is_foil && (
-                            <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-700 text-[10px] font-bold rounded uppercase tracking-wider">
+                            <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded uppercase tracking-wider">
                                 Foil
                             </span>
                         )}
@@ -210,53 +210,53 @@ export const CardDetails: React.FC = () => {
                 </div>
 
                 {/* Main Content Grid: Image & Chart */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* Left Layer: Image and Buttons */}
-                    <div className="lg:col-span-4 flex flex-col gap-3">
-                        <div className="card p-0 bg-transparent shadow-none border-none w-full mx-auto lg:mx-0 overflow-hidden md:max-w-[320px]">
+                    <div className="lg:col-span-4 flex flex-col gap-4">
+                        <div className="card p-1.5 bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100 max-w-[320px] mx-auto lg:mx-0">
                             <img
                                 src={card.image_url || scryfallData?.image_uris?.normal || scryfallData?.image_uris?.large || 'https://placeholder.com/336x468?text=Imagem+indispon%C3%ADvel'}
                                 alt={card.name}
-                                className="w-full rounded-xl shadow-2xl skew-y-1 transform transition-all hover:skew-y-0 duration-500"
+                                className="w-full rounded-xl shadow-inner"
                             />
                         </div>
 
-                        <div className="grid grid-cols-3 gap-2 w-full mx-auto lg:mx-0 md:max-w-[320px]">
-                            <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-1.5 h-auto" disabled>
-                                <Eye size={16} className="mb-0.5 text-blue-500" />
-                                <span className="text-[8px] uppercase font-bold text-gray-400">Watch</span>
+                        <div className="grid grid-cols-3 gap-2 max-w-[320px] mx-auto lg:mx-0">
+                            <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-2 h-auto" disabled>
+                                <Eye size={18} className="mb-0.5 text-blue-500" />
+                                <span className="text-[9px] uppercase font-bold text-gray-400">Watch</span>
                             </button>
-                            <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-1.5 h-auto" disabled>
-                                <PlusCircle size={16} className="mb-0.5 text-green-500" />
-                                <span className="text-[8px] uppercase font-bold text-gray-400">Add</span>
+                            <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-2 h-auto" disabled>
+                                <PlusCircle size={18} className="mb-0.5 text-green-500" />
+                                <span className="text-[9px] uppercase font-bold text-gray-400">Inventory</span>
                             </button>
-                            <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-1.5 h-auto" disabled>
-                                <Share2 size={16} className="mb-0.5 text-purple-500" />
-                                <span className="text-[8px] uppercase font-bold text-gray-400">Share</span>
+                            <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-2 h-auto" disabled>
+                                <Share2 size={18} className="mb-0.5 text-purple-500" />
+                                <span className="text-[9px] uppercase font-bold text-gray-400">Share</span>
                             </button>
                         </div>
                     </div>
 
                     {/* Right Layer: Chart */}
                     <div className="lg:col-span-8">
-                        <div className="card h-full flex flex-col bg-slate-900 border-none p-3 md:p-6 rounded-2xl">
-                            <div className="flex justify-between items-center mb-2">
-                                <h3 className="font-bold text-base md:text-lg flex items-center gap-2 text-white">
-                                    <TrendingUp size={16} className="text-blue-500" />
-                                    Histórico
+                        <div className="card h-full flex flex-col bg-slate-900 border-none">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-bold text-lg flex items-center gap-2 text-white">
+                                    <TrendingUp size={18} className="text-blue-500" />
+                                    Histórico de Preço (R$)
                                 </h3>
 
                                 <select
-                                    className="input py-0.5 px-2 text-[10px] md:text-xs bg-slate-800 border-slate-700 text-gray-300 rounded-md"
+                                    className="input py-0.5 px-2 text-xs bg-slate-800 border-slate-700 text-gray-300 rounded-md"
                                     value={priceSource}
                                     onChange={(e) => setPriceSource(e.target.value as any)}
                                 >
-                                    <option value="CardKingdom">CardKingdom</option>
-                                    <option value="LigaMagic">LigaMagic</option>
+                                    <option value="CardKingdom">CardKingdom (Compra)</option>
+                                    <option value="LigaMagic">LigaMagic (Venda)</option>
                                 </select>
                             </div>
 
-                            <div className="flex-1 min-h-[200px] md:min-h-[280px]">
+                            <div className="flex-1 min-h-[280px]">
                                 {filteredHistory.length > 0 ? (
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={filteredHistory}>
@@ -265,43 +265,41 @@ export const CardDetails: React.FC = () => {
                                                 dataKey="date"
                                                 axisLine={false}
                                                 tickLine={false}
-                                                tick={{ fill: '#64748b', fontSize: 10 }}
+                                                tick={{ fill: '#64748b', fontSize: 11 }}
                                                 dy={10}
                                             />
                                             <YAxis
                                                 axisLine={false}
                                                 tickLine={false}
-                                                tick={{ fill: '#64748b', fontSize: 10 }}
-                                                tickFormatter={(value) => `R$${value}`}
-                                                width={40}
+                                                tick={{ fill: '#64748b', fontSize: 11 }}
+                                                tickFormatter={(value) => `R$ ${value}`}
                                             />
                                             <Tooltip
                                                 contentStyle={{
                                                     backgroundColor: '#0f172a',
-                                                    borderRadius: '8px',
+                                                    borderRadius: '12px',
                                                     border: '1px solid #1e293b',
-                                                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.5)',
-                                                    padding: '8px',
-                                                    fontSize: '12px'
+                                                    boxShadow: '0 10px 15px -3px rgba(0,0,0,0.5)',
+                                                    padding: '10px'
                                                 }}
                                                 itemStyle={{ color: '#fff' }}
-                                                labelStyle={{ color: '#64748b', marginBottom: '2px' }}
+                                                labelStyle={{ color: '#64748b', marginBottom: '4px' }}
                                                 formatter={(value) => [`R$ ${value}`, 'Preço']}
                                             />
                                             <Line
                                                 type="monotone"
                                                 dataKey="price"
                                                 stroke="#3b82f6"
-                                                strokeWidth={2}
-                                                dot={{ fill: '#3b82f6', strokeWidth: 1, r: 3, stroke: '#0f172a' }}
-                                                activeDot={{ r: 5, strokeWidth: 0 }}
+                                                strokeWidth={3}
+                                                dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4, stroke: '#0f172a' }}
+                                                activeDot={{ r: 6, strokeWidth: 0 }}
                                             />
                                         </LineChart>
                                     </ResponsiveContainer>
                                 ) : (
-                                    <div className="h-full flex flex-col items-center justify-center text-gray-500 bg-slate-800/50 rounded-xl border-2 border-dashed border-slate-800 text-xs">
-                                        <Info size={24} className="mb-2 opacity-30" />
-                                        <p>Sem dados.</p>
+                                    <div className="h-full flex flex-col items-center justify-center text-gray-500 bg-slate-800/50 rounded-xl border-2 border-dashed border-slate-800">
+                                        <Info size={32} className="mb-2 opacity-30" />
+                                        <p>Sem dados de histórico para esta fonte.</p>
                                     </div>
                                 )}
                             </div>
@@ -311,52 +309,52 @@ export const CardDetails: React.FC = () => {
             </div>
 
             {/* Market Prices Card */}
-            <div className="card bg-slate-900 border-none mb-4 p-4 rounded-2xl">
-                <h3 className="font-bold text-base md:text-lg mb-3 border-b border-slate-800 pb-2 text-white flex items-center gap-2">
-                    <span className="text-emerald-500">$</span> Cotações (Hoje)
+            <div className="card bg-slate-900 border-none mb-6">
+                <h3 className="font-bold text-lg mb-4 border-b border-slate-800 pb-2 text-white flex items-center gap-2">
+                    <span className="text-emerald-500">$</span> Cotações de Mercado (Hoje)
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* CK Buylist USD */}
-                    <div className="bg-slate-800 p-3 rounded-xl border border-slate-700">
-                        <h4 className="text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">CK (Cash)</h4>
-                        <div className="text-lg md:text-2xl font-bold text-white">
+                    <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                        <h4 className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Card Kingdom (Buylist)</h4>
+                        <div className="text-2xl font-bold text-white">
                             {marketPrices?.ck_buylist_usd ?
                                 new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(marketPrices.ck_buylist_usd) :
-                                <span className="text-gray-600 text-base">---</span>
+                                <span className="text-gray-600 text-lg">---</span>
                             }
                         </div>
-                        <div className="text-[10px] text-emerald-400 font-medium">USD</div>
+                        <div className="text-xs text-emerald-400 font-medium">USD (Cash)</div>
                     </div>
 
                     {/* CK Buylist Credit */}
-                    <div className="bg-slate-800 p-3 rounded-xl border border-slate-700">
-                        <h4 className="text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">CK (Credit)</h4>
-                        <div className="text-lg md:text-2xl font-bold text-white">
+                    <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                        <h4 className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">Card Kingdom (Buylist)</h4>
+                        <div className="text-2xl font-bold text-white">
                             {marketPrices?.ck_buylist_credit ?
                                 new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(marketPrices.ck_buylist_credit) :
-                                <span className="text-gray-600 text-base">---</span>
+                                <span className="text-gray-600 text-lg">---</span>
                             }
                         </div>
-                        <div className="text-[10px] text-blue-400 font-medium">+30%</div>
+                        <div className="text-xs text-blue-400 font-medium">Store Credit (+30%)</div>
                     </div>
 
                     {/* LigaMagic Sell */}
-                    <div className="bg-slate-800 p-3 rounded-xl border border-slate-700 col-span-2 md:col-span-1">
-                        <h4 className="text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">LigaMagic</h4>
-                        <div className="text-lg md:text-2xl font-bold text-white">
+                    <div className="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                        <h4 className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-1">LigaMagic (Venda)</h4>
+                        <div className="text-2xl font-bold text-white">
                             {card.lm_sell_brl ?
                                 new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(card.lm_sell_brl) :
-                                <span className="text-gray-600 text-base">---</span>
+                                <span className="text-gray-600 text-lg">---</span>
                             }
                         </div>
-                        <div className="text-[10px] text-amber-400 font-medium">BRL (Venda)</div>
+                        <div className="text-xs text-amber-400 font-medium">Menor Preço (BRL)</div>
                     </div>
                 </div>
             </div>
 
             {/* Bottom Section: Scryfall Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-12">
-                <div className="card bg-slate-900 border-none p-4">
+                <div className="card bg-slate-900 border-none">
                     <div className="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
                         <h3 className="font-bold text-lg text-white">Efeito / Texto</h3>
                         <div className="flex gap-1 bg-slate-800 p-0.5 rounded-lg">
@@ -396,7 +394,7 @@ export const CardDetails: React.FC = () => {
                     )}
                 </div>
 
-                <div className="card bg-slate-900 border-none p-4">
+                <div className="card bg-slate-900 border-none">
                     <h3 className="font-bold text-lg mb-4 border-b border-slate-800 pb-2 text-white">Links Oficiais</h3>
                     <div className="space-y-3">
                         {card.link_ck && (

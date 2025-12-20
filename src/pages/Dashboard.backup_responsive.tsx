@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { TrendingUp, DollarSign, Layers, ChevronRight } from 'lucide-react';
+import { TrendingUp, DollarSign, Layers } from 'lucide-react';
 import { useTracking } from '../hooks/useTracking';
 import { TrackButton } from '../components/TrackButton';
 
@@ -90,50 +90,50 @@ export const Dashboard: React.FC = () => {
         }
     };
     return (
-        <div className="p-4 md:p-6 space-y-6">
+        <div className="p-6 space-y-6">
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
-                <div className="card p-2 md:p-6">
-                    <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-blue-500/10 rounded-md text-blue-500 shrink-0">
-                            <Layers size={16} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="card">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-blue-500/10 rounded-lg text-blue-500">
+                            <Layers size={24} />
                         </div>
-                        <div className="overflow-hidden min-w-0">
-                            <p className="text-[9px] md:text-sm text-[var(--text-secondary)] truncate leading-tight">Coleções</p>
-                            <p className="text-sm md:text-2xl font-bold truncate leading-tight">{stats.totalCollections}</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="card p-2 md:p-6">
-                    <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-green-500/10 rounded-md text-green-500 shrink-0">
-                            <TrendingUp size={16} />
-                        </div>
-                        <div className="overflow-hidden min-w-0">
-                            <p className="text-[9px] md:text-sm text-[var(--text-secondary)] truncate leading-tight">Oportunidades</p>
-                            <p className="text-sm md:text-2xl font-bold truncate leading-tight">{stats.totalOpportunities}</p>
+                        <div>
+                            <p className="text-sm text-[var(--text-secondary)]">Coleções</p>
+                            <p className="text-2xl font-bold">{stats.totalCollections}</p>
                         </div>
                     </div>
                 </div>
-                <div className="card p-2 md:p-6">
-                    <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-purple-500/10 rounded-md text-purple-500 shrink-0">
-                            <DollarSign size={16} />
+                <div className="card">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-green-500/10 rounded-lg text-green-500">
+                            <TrendingUp size={24} />
                         </div>
-                        <div className="overflow-hidden min-w-0">
-                            <p className="text-[9px] md:text-sm text-[var(--text-secondary)] truncate leading-tight">Dólar (USD)</p>
-                            <p className="text-sm md:text-2xl font-bold truncate leading-tight">R$ {stats.usdRate.toFixed(2)}</p>
+                        <div>
+                            <p className="text-sm text-[var(--text-secondary)]">Oportunidades</p>
+                            <p className="text-2xl font-bold">{stats.totalOpportunities}</p>
                         </div>
                     </div>
                 </div>
-                <div className="card p-2 md:p-6">
-                    <div className="flex items-center gap-2">
-                        <div className="p-1.5 bg-indigo-500/10 rounded-md text-indigo-500 shrink-0">
-                            <DollarSign size={16} />
+                <div className="card">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-purple-500/10 rounded-lg text-purple-500">
+                            <DollarSign size={24} />
                         </div>
-                        <div className="overflow-hidden min-w-0">
-                            <p className="text-[9px] md:text-sm text-[var(--text-secondary)] truncate leading-tight">Euro (EUR)</p>
-                            <p className="text-sm md:text-2xl font-bold truncate leading-tight">R$ {stats.eurRate.toFixed(2)}</p>
+                        <div>
+                            <p className="text-sm text-[var(--text-secondary)]">Dólar (USD)</p>
+                            <p className="text-2xl font-bold">R$ {stats.usdRate.toFixed(2)}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="card">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-indigo-500/10 rounded-lg text-indigo-500">
+                            <DollarSign size={24} />
+                        </div>
+                        <div>
+                            <p className="text-sm text-[var(--text-secondary)]">Euro (EUR)</p>
+                            <p className="text-2xl font-bold">R$ {stats.eurRate.toFixed(2)}</p>
                         </div>
                     </div>
                 </div>
@@ -141,30 +141,28 @@ export const Dashboard: React.FC = () => {
 
             {/* Top Opportunities Section */}
             <div className="card">
-                <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-sm md:text-base font-bold uppercase tracking-wide">Top Cartas (USD)</h2>
-                    <button className="btn btn-secondary p-1.5 rounded-lg" title="Ver Todas">
-                        <ChevronRight size={16} />
-                    </button>
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-bold">Top Cartas (USD)</h2>
+                    <button className="btn btn-secondary text-sm">Ver Todas</button>
                 </div>
 
                 <div className="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th className="text-[10px] md:text-xs">Coleção</th>
-                                <th className="text-[10px] md:text-xs">Nome</th>
-                                <th className="text-[10px] md:text-xs">Preço (USD)</th>
-                                <th className="text-[10px] md:text-xs">Status</th>
+                                <th>Coleção</th>
+                                <th>Nome</th>
+                                <th>Preço (USD)</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {topOpportunities.length > 0 ? (
                                 topOpportunities.map((item, index) => (
                                     <tr key={index} className="group hover:bg-gray-50">
-                                        <td className="font-medium relative text-xs md:text-sm">
+                                        <td className="font-medium relative">
                                             <div className="flex items-center gap-2">
-                                                <span className="truncate max-w-[80px] md:max-w-[150px]">{item.set_name}</span>
+                                                {item.set_name}
                                                 <TrackButton
                                                     type="set"
                                                     isTracked={trackedSetCodes.has(item.set_code)}
@@ -175,9 +173,9 @@ export const Dashboard: React.FC = () => {
                                                 />
                                             </div>
                                         </td>
-                                        <td className="relative text-xs md:text-sm">
+                                        <td className="relative">
                                             <div className="flex items-center gap-2">
-                                                <span className="truncate max-w-[100px] md:max-w-[200px]">{item.name}</span>
+                                                {item.name}
                                                 <TrackButton
                                                     type="card"
                                                     isTracked={trackedCardIds.has(item.id)}
@@ -188,9 +186,9 @@ export const Dashboard: React.FC = () => {
                                                 />
                                             </div>
                                         </td>
-                                        <td className="text-xs md:text-sm">${item.ck_buy_usd}</td>
+                                        <td>${item.ck_buy_usd}</td>
                                         <td>
-                                            <span className="px-1.5 py-0.5 rounded-full text-[10px] md:text-xs font-bold bg-[rgba(48,209,88,0.1)] text-[var(--success)]">
+                                            <span className="px-2 py-1 rounded-full text-xs font-bold bg-[rgba(48,209,88,0.1)] text-[var(--success)]">
                                                 Alta
                                             </span>
                                         </td>
@@ -198,7 +196,7 @@ export const Dashboard: React.FC = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={4} className="text-center py-8 text-[var(--text-secondary)] text-sm">
+                                    <td colSpan={4} className="text-center py-8 text-[var(--text-secondary)]">
                                         Nenhuma carta encontrada no momento.
                                     </td>
                                 </tr>

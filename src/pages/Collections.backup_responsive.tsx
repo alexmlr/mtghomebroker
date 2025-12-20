@@ -146,13 +146,13 @@ export const Collections: React.FC = () => {
 
     return (
         <div>
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-2">
-                <h1 className="font-bold text-base md:text-2xl">Lista de Cartas</h1>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                <h1 className="font-bold text-2xl">Lista de Cartas</h1>
 
-                <div className="flex flex-row gap-1 w-full md:w-auto">
+                <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                     {/* SET SELECTOR (Uses Code) */}
                     <select
-                        className="input flex-1 md:flex-none md:max-w-[250px] text-[11px] py-1 h-8"
+                        className="input max-w-[250px]"
                         value={selectedSet}
                         onChange={(e) => setSelectedSet(e.target.value)}
                     >
@@ -162,12 +162,11 @@ export const Collections: React.FC = () => {
                         ))}
                     </select>
 
-                    <div className="search-box flex-1 md:flex-none">
-                        <Search className="search-icon" size={14} style={{ top: '50%', transform: 'translateY(-50%)' }} />
+                    <div className="search-box">
+                        <Search className="search-icon" size={18} />
                         <input
                             type="text"
-                            className="text-[11px] py-1 h-8 w-full"
-                            placeholder="Buscar..."
+                            placeholder="Buscar carta..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -176,36 +175,36 @@ export const Collections: React.FC = () => {
             </div>
 
             {error && (
-                <div style={{ padding: '0.5rem', backgroundColor: 'rgba(239, 35, 60, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)', borderRadius: '8px', marginBottom: '0.5rem', fontSize: '0.8rem' }}>
+                <div style={{ padding: '1rem', backgroundColor: 'rgba(239, 35, 60, 0.1)', border: '1px solid var(--danger)', color: 'var(--danger)', borderRadius: '8px', marginBottom: '1rem' }}>
                     {error}
                 </div>
             )}
 
             <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
                 {loading ? (
-                    <div className="flex flex-col items-center justify-center p-4">
-                        <Loader2 className="animate-spin mb-2" size={20} />
-                        <p className="text-secondary text-xs">Carregando cartas...</p>
+                    <div className="flex flex-col items-center justify-center" style={{ padding: '3rem' }}>
+                        <Loader2 className="animate-spin mb-2" size={32} />
+                        <p className="text-secondary">Carregando cartas...</p>
                     </div>
                 ) : (
                     <>
-                        <div className="table-container overflow-x-auto" style={{ border: 'none', padding: '0 4px 4px' }}>
-                            <table className="w-full min-w-[350px] md:min-w-full">
+                        <div className="table-container" style={{ border: 'none' }}>
+                            <table className="w-full">
                                 <thead>
                                     <tr>
                                         {/* Columns requested: Name, Set, Foil, CK Prices */}
-                                        <th onClick={() => handleSort('name')} className="pl-2 md:pl-4 text-left py-1 md:py-3 text-[10px] md:text-sm">
-                                            <div className="flex items-center gap-0.5">Nome <ArrowUpDown size={8} /></div>
+                                        <th onClick={() => handleSort('name')} className="pl-4 text-left">
+                                            <div className="flex items-center gap-2">Nome <ArrowUpDown size={14} /></div>
                                         </th>
-                                        <th onClick={() => handleSort('set_name')} className="px-0.5 py-1 md:py-3 text-[10px] md:text-sm">
-                                            <div className="flex items-center gap-0.5">Col <ArrowUpDown size={8} /></div>
+                                        <th onClick={() => handleSort('set_name')}>
+                                            <div className="flex items-center gap-2">Coleção <ArrowUpDown size={14} /></div>
                                         </th>
-                                        <th className="px-0.5 py-1 md:py-3 text-[10px] md:text-sm text-center">Foil</th>
-                                        <th onClick={() => handleSort('ck_buylist_usd')} className="px-0.5 py-1 md:py-3 text-[10px] md:text-sm">
-                                            <div className="flex items-center gap-0.5">USD <ArrowUpDown size={8} /></div>
+                                        <th>Foil</th>
+                                        <th onClick={() => handleSort('ck_buylist_usd')}>
+                                            <div className="flex items-center gap-2">Preço (USD) <ArrowUpDown size={14} /></div>
                                         </th>
-                                        <th onClick={() => handleSort('ck_buylist_credit')} className="px-0.5 py-1 md:py-3 text-[10px] md:text-sm">
-                                            <div className="flex items-center gap-0.5">Créd <span className="hidden md:inline">(USD)</span> <ArrowUpDown size={8} /></div>
+                                        <th onClick={() => handleSort('ck_buylist_credit')}>
+                                            <div className="flex items-center gap-2">Crédito (USD) <ArrowUpDown size={14} /></div>
                                         </th>
                                     </tr>
                                 </thead>
@@ -213,16 +212,16 @@ export const Collections: React.FC = () => {
                                     {data.length > 0 ? (
                                         data.map((card) => (
                                             <tr key={card.id} className="group hover:bg-gray-50 border-b border-gray-100 last:border-0 transition-colors">
-                                                <td className="pl-2 md:pl-4 py-1 md:py-3 relative min-w-[120px]">
-                                                    <div className="flex items-center gap-1">
+                                                <td className="pl-4 py-3 relative">
+                                                    <div className="flex items-center gap-2">
                                                         <CardPreview set_code={card.set_code} collector_number={card.collector_number_normalized}>
-                                                            <Link to={`/carta/${card.id}`} className="font-bold hover:text-blue-500 transition-colors text-[11px] md:text-base line-clamp-2 leading-tight">
+                                                            <Link to={`/carta/${card.id}`} className="font-bold hover:text-blue-500 transition-colors">
                                                                 {card.name}
                                                             </Link>
                                                         </CardPreview>
 
-                                                        {/* Hover Track Button - Visible on Mobile (Smaller) */}
-                                                        <div className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex-shrink-0 scale-75 md:scale-100 origin-left">
+                                                        {/* Hover Track Button */}
+                                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <TrackButton
                                                                 type="card"
                                                                 isTracked={trackedCardIds.has(Number(card.id))}
@@ -235,20 +234,20 @@ export const Collections: React.FC = () => {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="text-secondary text-[9px] md:text-sm px-0.5 text-center md:text-left whitespace-nowrap md:whitespace-normal max-w-[60px] md:max-w-[200px] truncate">{card.set_name}</td>
-                                                <td className="text-gray-400 text-center text-[9px] md:text-sm">-</td>
-                                                <td className="text-green-600 font-medium text-[9px] md:text-sm px-0.5">
+                                                <td className="text-secondary">{card.set_name}</td>
+                                                <td className="text-gray-400 text-center">-</td>
+                                                <td className="text-green-600 font-medium">
                                                     {card.ck_buylist_usd > 0 ? formatUSD(card.ck_buylist_usd) : <span className="text-gray-300">---</span>}
                                                 </td>
-                                                <td className="text-blue-600 font-medium text-[9px] md:text-sm px-0.5">
+                                                <td className="text-blue-600 font-medium">
                                                     {card.ck_buylist_credit > 0 ? formatUSD(card.ck_buylist_credit) : <span className="text-gray-300">---</span>}
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} style={{ textAlign: 'center', padding: '1rem', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
-                                                Nenhuma carta.
+                                            <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-secondary)' }}>
+                                                Nenhuma carta encontrada.
                                             </td>
                                         </tr>
                                     )}

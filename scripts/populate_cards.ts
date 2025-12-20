@@ -104,8 +104,8 @@ async function main() {
                     name: card.name,
                     set_name: card.set.name,
                     set_code: card.setCode,
-                    collector_number: card.number,
-                    collector_number_normalized: card.number, // Simple normalization for now
+                    collector_number: card.number.replace(/^0+/, '') || card.number,
+                    collector_number_normalized: card.number.replace(/^0+/, '') || card.number,
                     imported_at: new Date().toISOString()
                 };
 

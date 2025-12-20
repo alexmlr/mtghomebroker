@@ -19,7 +19,7 @@ export const useTracking = () => {
             if (cardsRes.error) throw cardsRes.error;
             if (setsRes.error) throw setsRes.error;
 
-            setTrackedCardIds(new Set(cardsRes.data.map(i => i.card_id)));
+            setTrackedCardIds(new Set(cardsRes.data.map(i => Number(i.card_id))));
             setTrackedSetCodes(new Set(setsRes.data.map(i => i.set_code)));
         } catch (error) {
             console.error('Error fetching tracked items:', error);
@@ -33,8 +33,14 @@ export const useTracking = () => {
     }, [fetchTrackedItems]);
 
     const toggleTrackCard = async (cardId: number) => {
-        if (!user) return;
+        if (!user) {
+            console.error("User not logged in");
+            return { success: false, error: 'User not logged in' };
+        }
+        console.log(`Toggling card ${cardId} for user ${user.id}`);
+
         const isTracked = trackedCardIds.has(cardId);
+        console.log(`Current state: ${isTracked ? 'Tracked' : 'Not Tracked'}`);
 
         // Optimistic update
         const newSet = new Set(trackedCardIds);
@@ -44,11 +50,15 @@ export const useTracking = () => {
 
         try {
             if (isTracked) {
-                const { error } = await supabase.from('user_tracked_cards').delete().eq('user_id', user.id).eq('card_id', cardId);
+                console.log("Attempting Delete...");
+                const { error, data } = await supabase.from('user_tracked_cards').delete().eq('user_id', user.id).eq('card_id', cardId).select();
                 if (error) throw error;
+                console.log("Delete successful", data);
             } else {
-                const { error } = await supabase.from('user_tracked_cards').insert({ user_id: user.id, card_id: cardId });
+                console.log("Attempting Insert...");
+                const { error, data } = await supabase.from('user_tracked_cards').insert({ user_id: user.id, card_id: cardId }).select();
                 if (error) throw error;
+                console.log("Insert successful", data);
             }
             return { success: true };
         } catch (error: any) {

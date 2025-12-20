@@ -86,13 +86,13 @@ const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessa
     const formatBRL = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
 
     return (
-        <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-                <h2 className="text-base md:text-xl font-bold">{title}</h2>
+        <div className="mb-8">
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">{title}</h2>
                 <div className="search-box">
-                    <Search className="search-icon" size={14} style={{ top: '50%', transform: 'translateY(-50%)' }} />
+                    <Search className="search-icon" size={16} />
                     <input
-                        className="input text-[11px] py-1 h-8"
+                        className="input"
                         placeholder="Buscar..."
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
@@ -102,90 +102,88 @@ const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessa
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="table-container border-none overflow-x-auto" style={{ padding: '0 4px 4px' }}>
-                    <table className="w-full min-w-[350px] md:min-w-full">
+                <div className="table-container border-none">
+                    <table className="w-full">
                         <thead>
                             <tr>
-                                <th onClick={() => handleSort('name')} className="pl-3 text-left py-1 md:py-3 text-[10px] md:text-sm">
-                                    <div className="flex items-center gap-0.5">Nome <ArrowUpDown size={8} className="inline" /></div>
-                                </th>
-                                <th onClick={() => handleSort('set_name')} className="px-0.5 py-1 md:py-3 text-[10px] md:text-sm whitespace-nowrap md:whitespace-normal">
-                                    <div className="flex items-center gap-0.5">Col <ArrowUpDown size={8} className="inline" /></div>
-                                </th>
+                                <th onClick={() => handleSort('name')}>Nome <ArrowUpDown size={12} className="inline" /></th>
+                                <th onClick={() => handleSort('set_name')}>Coleção <ArrowUpDown size={12} className="inline" /></th>
                                 {viewName === 'my_tracked_cards_view' && (
                                     <>
-                                        <th onClick={() => handleSort('ck_buylist_usd')} className="px-0.5 py-1 md:py-3 text-[10px] md:text-sm whitespace-nowrap">CK(USD)</th>
-                                        <th onClick={() => handleSort('ck_buylist_credit')} className="px-0.5 py-1 md:py-3 text-[10px] md:text-sm whitespace-nowrap">CK(Créd)</th>
-                                        <th onClick={() => handleSort('lm_sell_brl')} className="px-0.5 py-1 md:py-3 text-[10px] md:text-sm whitespace-nowrap">LM</th>
+                                        <th onClick={() => handleSort('ck_buylist_usd')}>Compra CK (USD)</th>
+                                        <th onClick={() => handleSort('ck_buylist_credit')}>Compra CK (Créditos)</th>
+                                        <th onClick={() => handleSort('lm_sell_brl')}>Venda LM</th>
                                     </>
                                 )}
-                                <th className="text-right px-2 py-1 md:py-3 text-[10px] md:text-sm">Ações</th>
+                                <th className="text-right">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             {data.length > 0 ? (
                                 data.map(card => (
-                                    <tr key={card.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
-                                        <td className="font-bold relative py-1 md:py-3 pl-3 min-w-[120px]">
+                                    <tr key={card.id}>
+                                        <td className="font-bold relative">
                                             {viewName === 'my_tracked_cards_view' ? (
                                                 <CardPreview set_code={card.set_code} collector_number={card.collector_number_normalized}>
-                                                    <Link to={`/carta/${card.id}`} className="hover:text-blue-500 text-[11px] md:text-base line-clamp-2 leading-tight">
+                                                    <Link to={`/carta/${card.id}`} className="hover:text-blue-500">
                                                         {card.name}
                                                     </Link>
                                                 </CardPreview>
                                             ) : (
-                                                <span className="text-[11px] md:text-base">{card.name}</span>
+                                                <span>{card.name}</span> // Set name usually implies Card Name is Set Name in this view? Or checking sets view schema? 
+                                                // Actually my_tracked_sets_view returns: set_name, set_code, count etc.
+                                                // Let's assume generic mapping or fix specifically for Sets if needed. 
+                                                // Wait, Sets view usually has 'set_name' as name?
+                                                // Let's rely on standard mapping or assume simpler row for Sets.
                                             )}
                                         </td>
-                                        <td className="text-gray-500 text-[9px] md:text-sm px-0.5 truncate max-w-[60px] md:max-w-[200px]">{card.set_name || card.set_code}</td>
+                                        <td className="text-gray-500">{card.set_name || card.set_code}</td>
 
                                         {viewName === 'my_tracked_cards_view' && (
                                             <>
-                                                <td className="text-green-600 font-medium text-[9px] md:text-sm px-0.5">{formatUSD(card.ck_buylist_usd)}</td>
-                                                <td className="text-blue-600 font-medium text-[9px] md:text-sm px-0.5">{formatUSD(card.ck_buylist_credit)}</td>
-                                                <td className="text-purple-600 text-[9px] md:text-sm px-0.5">
+                                                <td className="text-green-600 font-medium">{formatUSD(card.ck_buylist_usd)}</td>
+                                                <td className="text-blue-600 font-medium">{formatUSD(card.ck_buylist_credit)}</td>
+                                                <td className="text-purple-600">
                                                     {formatBRL(card.lm_sell_brl)}
                                                     {card.liga_magic_url && (
-                                                        <a href={card.liga_magic_url} target="_blank" className="ml-1 text-gray-400 hover:text-purple-500"><ExternalLink size={10} className="inline" /></a>
+                                                        <a href={card.liga_magic_url} target="_blank" className="ml-2 text-gray-400 hover:text-purple-500"><ExternalLink size={12} className="inline" /></a>
                                                     )}
                                                 </td>
                                             </>
                                         )}
 
-                                        <td className="px-2">
-                                            <div className="flex justify-end gap-1">
+                                        <td>
+                                            <div className="flex justify-end gap-2">
                                                 {viewName === 'my_tracked_cards_view' && (
                                                     <button
                                                         onClick={() => handleOpenLmModal(card)}
-                                                        className="p-1 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded"
+                                                        className="p-1.5 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded"
                                                         title="Vincular LigaMagic"
                                                     >
-                                                        <LinkIcon size={12} />
+                                                        <LinkIcon size={16} />
                                                     </button>
                                                 )}
 
-                                                <div className="scale-75 md:scale-100 origin-right">
-                                                    {viewName === 'my_tracked_cards_view' ? (
-                                                        <TrackButton
-                                                            type="card"
-                                                            isTracked={true}
-                                                            onToggle={() => toggleTrackCard(Number(card.id))}
-                                                        />
-                                                    ) : (
-                                                        <TrackButton
-                                                            type="set"
-                                                            isTracked={true}
-                                                            onToggle={() => toggleTrackSet(card.set_code)}
-                                                        />
-                                                    )}
-                                                </div>
+                                                {viewName === 'my_tracked_cards_view' ? (
+                                                    <TrackButton
+                                                        type="card"
+                                                        isTracked={true}
+                                                        onToggle={() => toggleTrackCard(Number(card.id))}
+                                                    />
+                                                ) : (
+                                                    <TrackButton
+                                                        type="set"
+                                                        isTracked={true}
+                                                        onToggle={() => toggleTrackSet(card.set_code)}
+                                                    />
+                                                )}
                                             </div>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className="text-center py-4 text-secondary text-[10px] md:text-sm">
+                                    <td colSpan={6} className="text-center py-8 text-secondary">
                                         {emptyMessage}
                                     </td>
                                 </tr>

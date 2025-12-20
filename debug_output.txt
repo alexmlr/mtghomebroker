@@ -1,0 +1,13 @@
+Checking Sets vs All Cards...
+
+Sample Sets: 15th Anniversary Cards (P15A), 2016 Heroes of the Realm (PHTR), 2017 Gift Pack (G17), 2017 Heroes of the Realm (PH17), 2018 Heroes of the Realm (PH18)
+
+Sample Cards: Ancestor's Chosen [Code: 10e], Ancestor's Chosen [Code: 10e], Angel of Mercy [Code: 10e], Angel of Mercy [Code: 10e], Angelic Blessing [Code: 10e]
+
+Testing filtering for set: 15th Anniversary Cards (P15A)
+Found 0 cards with set_code 'P15A' (Exact Match)
+Found 0 cards with set_code 'P15A' (Upper)
+Found 2 cards with set_code 'p15a' (Lower)
+
+Manual Join Test: Card set_code '10e' -> Set found: NO
+Manual Join Test (Insensitive): Card set_code '10e' -> Set found: YES

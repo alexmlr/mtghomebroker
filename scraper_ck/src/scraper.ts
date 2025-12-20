@@ -92,11 +92,13 @@ async function scrape(url: string) {
         console.log(`Found ${cards.length} cards.`);
 
         if (cards.length === 0) {
-            const content = await page.content();
-            console.log('DEBUG: Page Content Snippet:', content.substring(0, 500));
-            console.log('DEBUG: Checking keys selectors presence...');
-            const hasWrapper = await page.$('.itemContentWrapper');
-            console.log('Has .itemContentWrapper?', !!hasWrapper);
+            const pageTitle = await page.title();
+            console.warn(`[WARNING] No cards found on page: "${pageTitle}". This might be due to a Cloudflare block or change in page structure.`);
+
+            const hasCloudflare = await page.evaluate(() => document.body.innerText.includes('Cloudflare') || document.body.innerText.includes('Verify you are human'));
+            if (hasCloudflare) {
+                console.error(`[ERROR] Cloudflare bot detection detected. Scrape failed.`);
+            }
         }
 
         for (const card of cards) {

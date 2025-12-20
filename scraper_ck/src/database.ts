@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
     throw new Error('Missing SUPABASE_URL or SUPABASE_KEY (or SUPABASE_SERVICE_ROLE_KEY) environment variables');
@@ -141,8 +141,10 @@ export async function insertPriceHistory(card_id: number, price_raw: number, cur
 
 export async function updateLigaMagicPrice(cardId: number, priceBrl: number, url?: string) {
     // 1. Update Card Table
+    // We update both price AND ck_last_update (treating it as general last_update)
     const updateData: any = {
         lm_sell_brl: priceBrl,
+        ck_last_update: new Date().toISOString()
     };
 
     if (url) {
