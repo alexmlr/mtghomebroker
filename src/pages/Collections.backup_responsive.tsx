@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { Search, ArrowUpDown, Loader2 } from 'lucide-react';
-import { format } from 'date-fns';
 import { CardPreview } from '../components/CardPreview';
 import { useTracking } from '../hooks/useTracking';
 import { TrackButton } from '../components/TrackButton';

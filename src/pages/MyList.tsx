@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
-import { Search, ArrowUpDown, Loader2, Link as LinkIcon, ExternalLink } from 'lucide-react';
-import { format } from 'date-fns';
+import { Search, ArrowUpDown, Link as LinkIcon, ExternalLink } from 'lucide-react';
 import { CardPreview } from '../components/CardPreview';
 import { useTracking } from '../hooks/useTracking';
 import { TrackButton } from '../components/TrackButton';
@@ -33,7 +32,6 @@ interface TrackedTableProps {
 // Subcomponent for Table (Internal)
 const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessage }) => {
     const [data, setData] = useState<CardData[]>([]);
-    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: 'name', direction: 'asc' });
 
@@ -44,7 +42,6 @@ const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessa
     const { trackedCardIds, toggleTrackCard, trackedSetCodes, toggleTrackSet } = useTracking();
 
     const fetchCards = async () => {
-        setLoading(true);
         try {
             let query = supabase.from(viewName).select('*');
 
@@ -63,7 +60,6 @@ const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessa
         } catch (err: any) {
             console.error(err);
         } finally {
-            setLoading(false);
         }
     };
 

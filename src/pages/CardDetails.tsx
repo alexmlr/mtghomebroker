@@ -122,7 +122,7 @@ export const CardDetails: React.FC = () => {
         const fetchMarketPrices = async () => {
             if (!card?.mtgjson_uuid) return;
             try {
-                const { data, error } = await supabase
+                const { data } = await supabase
                     .from('card_prices')
                     .select('*')
                     .eq('mtgjson_uuid', card.mtgjson_uuid)
