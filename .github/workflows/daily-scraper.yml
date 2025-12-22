@@ -2,8 +2,8 @@ name: Daily MtgJson Scraper
 
 on:
   schedule:
-    # Runs at 12:00 UTC, which is 09:00 AM GMT-3
-    - cron: '0 12 * * *'
+    # Runs at 14:20 UTC, which is 11:20 AM GMT-3
+    - cron: '20 14 * * *'
   workflow_dispatch: # Allows manual triggering from the Actions tab
 
 jobs:
