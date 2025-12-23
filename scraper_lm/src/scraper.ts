@@ -6,15 +6,23 @@ export async function scrapeLigaMagic(browser: Browser, url: string, isFoil: boo
     let priceBrl: string | null = null;
 
     try {
-        // Set User Agent to avoid detection (Puppeteer Stealth handles this, but explicit setting is good practice)
-        // await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+        // Essential for bypassing basic bot detection and ensuring desktop layout
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+        await page.setViewport({ width: 1920, height: 1080 });
+        await page.setExtraHTTPHeaders({
+            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        });
 
         console.log(`Navigating to ${url} (Foil: ${isFoil}, Set: ${setCode || 'Any'})...`);
-        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-        // Wait for price container
+        // Wait for price container or captcha
         try {
-            await page.waitForSelector('#container-price-mkp-card', { timeout: 15000 });
+            // Check if we hit a captcha or block
+            // Sometimes checking specifically for title/body text helps debugging
+            // But we'll stick to waiting for our target.
+            await page.waitForSelector('#container-price-mkp-card', { timeout: 20000 });
         } catch (e) {
             console.warn(`LigaMagic: Price container not found for ${url}`);
             return 0;
