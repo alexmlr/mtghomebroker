@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Loader2 } from 'lucide-react';
-import { SearchableSelect, Option } from './SearchableSelect';
+import { SearchableSelect, type Option } from './SearchableSelect';
 
 interface LigaMagicModalProps {
     isOpen: boolean;
