@@ -275,24 +275,6 @@ export const CardDetails: React.FC = () => {
                                                 tickFormatter={(value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
                                                 width={80}
                                             />
-                                            <Tooltip
-                                                contentStyle={{
-                                                    backgroundColor: '#0f172a',
-                                                    borderRadius: '8px',
-                                                    border: '1px solid #1e293b',
-                                                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.5)',
-                                                    padding: '8px',
-                                                    fontSize: '12px'
-                                                }}
-                                                itemStyle={{ color: '#fff' }}
-                                                labelStyle={{ color: '#64748b', marginBottom: '2px' }}
-                                                cursor={{ stroke: '#64748b', strokeWidth: 1, strokeDasharray: '4 4' }}
-                                                wrapperStyle={{ zIndex: 1000 }}
-                                                formatter={(value: number | undefined) => [
-                                                    value !== undefined ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : '---',
-                                                    'Preço'
-                                                ]}
-                                            />
                                             <Line
                                                 type="monotone"
                                                 dataKey="price"
@@ -300,6 +282,24 @@ export const CardDetails: React.FC = () => {
                                                 strokeWidth={2}
                                                 dot={{ fill: '#3b82f6', strokeWidth: 1, r: 3, stroke: '#0f172a' }}
                                                 activeDot={{ r: 5, strokeWidth: 0 }}
+                                                isAnimationActive={false}
+                                            />
+                                            <Tooltip
+                                                contentStyle={{
+                                                    backgroundColor: '#1e293b',
+                                                    borderColor: '#334155',
+                                                    color: '#f8fafc',
+                                                    borderRadius: '8px',
+                                                    fontSize: '12px',
+                                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                                                }}
+                                                itemStyle={{ color: '#f8fafc' }}
+                                                labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
+                                                cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '4 4' }}
+                                                formatter={(value: number | undefined) => [
+                                                    value !== undefined ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : '---',
+                                                    'Preço'
+                                                ]}
                                             />
                                         </LineChart>
                                     </ResponsiveContainer>
