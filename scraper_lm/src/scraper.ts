@@ -25,6 +25,17 @@ export async function scrapeLigaMagic(browser: Browser, url: string, isFoil: boo
             await page.waitForSelector('#container-price-mkp-card', { timeout: 20000 });
         } catch (e) {
             console.warn(`LigaMagic: Price container not found for ${url}`);
+
+            // Enhanced Debugging for CI
+            try {
+                const title = await page.title();
+                const bodyPreview = await page.evaluate(() => document.body.innerText.substring(0, 500).replace(/\n/g, ' '));
+                console.error(`[DEBUG] Page Title: "${title}"`);
+                console.error(`[DEBUG] Body Preview: "${bodyPreview}..."`);
+            } catch (debugErr) {
+                console.error('[DEBUG] Failed to capture debug info:', debugErr);
+            }
+
             return 0;
         }
 

@@ -21,6 +21,10 @@ jobs:
         working-directory: ./scraper_lm
         run: npm ci
 
+      - name: Install Browser Binaries
+        working-directory: ./scraper_lm
+        run: npx puppeteer browsers install chrome
+
       - name: Build
         working-directory: ./scraper_lm
         run: npm run build
