@@ -43,23 +43,65 @@ const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessa
 
     const fetchCards = async () => {
         try {
-            let query = supabase.from(viewName).select('*');
+            if (viewName === 'my_tracked_sets_view') {
+                // FALLBACK: Query query 'user_tracked_sets' directly since view is missing
+                const { data: setsData, error } = await supabase
+                    .from('user_tracked_sets')
+                    .select('*, sets ( name, code )');
 
-            if (searchTerm) {
-                query = query.or(`name.ilike.%${searchTerm}%`);
+                if (error) throw error;
+
+                // Map to match internal structure
+                const mappedSets = setsData?.map((item: any) => ({
+                    id: item.id, // tracking ID
+                    name: item.sets?.name || item.set_code,
+                    set_name: item.sets?.name, // Display Name
+                    set_code: item.set_code,
+                    // Defaults for unused fields in sets view
+                    ck_buylist_usd: 0,
+                    ck_buylist_credit: 0,
+                    lm_sell_brl: 0,
+                    imported_at: '',
+                    ck_last_update: '',
+                    collector_number: '',
+                    collector_number_normalized: ''
+                })) || [];
+
+                // Client-side Filter/Sort for Sets (Simple implementation)
+                let finalData = mappedSets;
+                if (searchTerm) {
+                    const lower = searchTerm.toLowerCase();
+                    finalData = finalData.filter(s => s.name.toLowerCase().includes(lower) || s.set_code.toLowerCase().includes(lower));
+                }
+
+                finalData.sort((a, b) => {
+                    const fieldA = (a as any)[sortConfig.key] || '';
+                    const fieldB = (b as any)[sortConfig.key] || '';
+                    if (sortConfig.direction === 'asc') return fieldA > fieldB ? 1 : -1;
+                    else return fieldA < fieldB ? 1 : -1;
+                });
+
+                setData(finalData);
+
+            } else {
+                // Logic for Cards (View exists)
+                let query = supabase.from(viewName).select('*');
+
+                if (searchTerm) {
+                    query = query.or(`name.ilike.%${searchTerm}%`);
+                }
+
+                // Standard sort mapping
+                const sortKey = sortConfig.key;
+                query = query.order(sortKey, { ascending: sortConfig.direction === 'asc' });
+
+                const { data: cards, error } = await query;
+                if (error) throw error;
+
+                setData(cards || []);
             }
-
-            // Standard sort mapping
-            const sortKey = sortConfig.key;
-            query = query.order(sortKey, { ascending: sortConfig.direction === 'asc' });
-
-            const { data: cards, error } = await query;
-            if (error) throw error;
-
-            setData(cards || []);
         } catch (err: any) {
             console.error(err);
-        } finally {
         }
     };
 

@@ -145,13 +145,11 @@ export const Collections: React.FC = () => {
 
     return (
         <div>
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-2">
-                <h1 className="font-bold text-base md:text-2xl">Lista de Cartas</h1>
-
-                <div className="flex flex-row gap-1 w-full md:w-auto">
-                    {/* SET SELECTOR (Uses Code) */}
+            <div className="flex flex-col md:flex-row justify-start items-start md:items-center mb-2 gap-2">
+                <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                    {/* SET SELECTOR */}
                     <select
-                        className="input flex-1 md:flex-none md:max-w-[250px] text-[11px] py-1 h-8"
+                        className="input text-[11px] w-full md:w-[250px] py-0 px-2"
                         value={selectedSet}
                         onChange={(e) => setSelectedSet(e.target.value)}
                     >
@@ -161,11 +159,12 @@ export const Collections: React.FC = () => {
                         ))}
                     </select>
 
-                    <div className="search-box flex-1 md:flex-none">
-                        <Search className="search-icon" size={14} style={{ top: '50%', transform: 'translateY(-50%)' }} />
+                    {/* SEARCH BOX */}
+                    <div className="relative w-full md:w-[250px]">
+                        <Search className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={14} />
                         <input
                             type="text"
-                            className="text-[11px] py-1 h-8 w-full"
+                            className="input text-[11px] w-full pl-8"
                             placeholder="Buscar..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}

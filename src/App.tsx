@@ -11,28 +11,32 @@ import { Login } from './pages/Login';
 import { CardDetails } from './pages/CardDetails';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
+import { ThemeProvider } from './contexts/ThemeContext';
+
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
+      <ThemeProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
 
-          <Route path="/" element={
-            <ProtectedRoute>
-              <MainLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<Dashboard />} />
-            <Route path="minha-lista" element={<MyList />} />
-            <Route path="lista-de-cartas" element={<Collections />} />
-            <Route path="oportunidades" element={<Opportunities />} />
-            <Route path="configuracoes" element={<Settings />} />
-            <Route path="perfil" element={<Profile />} />
-            <Route path="carta/:id" element={<CardDetails />} />
-          </Route>
-        </Routes>
-      </Router>
+            <Route path="/" element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<Dashboard />} />
+              <Route path="minha-lista" element={<MyList />} />
+              <Route path="lista-de-cartas" element={<Collections />} />
+              <Route path="oportunidades" element={<Opportunities />} />
+              <Route path="configuracoes" element={<Settings />} />
+              <Route path="perfil" element={<Profile />} />
+              <Route path="carta/:id" element={<CardDetails />} />
+            </Route>
+          </Routes>
+        </Router>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

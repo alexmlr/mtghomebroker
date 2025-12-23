@@ -196,7 +196,7 @@ export const CardDetails: React.FC = () => {
             <div className="flex flex-col gap-4">
                 {/* Top Section: Title and Set */}
                 <div>
-                    <h1 className="text-2xl md:text-4xl font-extrabold text-white mb-0.5 leading-tight">{card.name}</h1>
+                    <h1 className="text-2xl md:text-4xl font-extrabold text-[var(--text-primary)] mb-0.5 leading-tight">{card.name}</h1>
                     <div className="flex items-center gap-2 text-sm md:text-lg text-gray-400">
                         <span className="font-medium truncate max-w-[200px] md:max-w-none">{card.set_name}</span>
                         <span className="text-gray-600">•</span>
@@ -217,7 +217,7 @@ export const CardDetails: React.FC = () => {
                             <img
                                 src={card.image_url || scryfallData?.image_uris?.normal || scryfallData?.image_uris?.large || 'https://placeholder.com/336x468?text=Imagem+indispon%C3%ADvel'}
                                 alt={card.name}
-                                className="w-full rounded-xl shadow-2xl skew-y-1 transform transition-all hover:skew-y-0 duration-500"
+                                className="w-full rounded-xl shadow-2xl transform transition-all hover:skew-y-0 duration-500"
                             />
                         </div>
 
@@ -239,15 +239,15 @@ export const CardDetails: React.FC = () => {
 
                     {/* Right Layer: Chart */}
                     <div className="lg:col-span-8">
-                        <div className="card h-full flex flex-col bg-slate-900 border-none p-3 md:p-6 rounded-2xl">
+                        <div className="card h-full flex flex-col bg-white dark:bg-slate-900 border-none p-3 md:p-6 rounded-2xl">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="font-bold text-base md:text-lg flex items-center gap-2 text-white">
+                                <h3 className="font-bold text-base md:text-lg flex items-center gap-2 text-[var(--text-primary)]">
                                     <TrendingUp size={16} className="text-blue-500" />
                                     Histórico
                                 </h3>
 
                                 <select
-                                    className="input py-0.5 px-2 text-[10px] md:text-xs bg-slate-800 border-slate-700 text-gray-300 rounded-md"
+                                    className="input py-0.5 px-2 text-[10px] md:text-xs bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-900 dark:text-gray-300 rounded-md"
                                     value={priceSource}
                                     onChange={(e) => setPriceSource(e.target.value as any)}
                                 >
@@ -272,8 +272,8 @@ export const CardDetails: React.FC = () => {
                                                 axisLine={false}
                                                 tickLine={false}
                                                 tick={{ fill: '#64748b', fontSize: 10 }}
-                                                tickFormatter={(value) => `R$${value}`}
-                                                width={40}
+                                                tickFormatter={(value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
+                                                width={80}
                                             />
                                             <Tooltip
                                                 contentStyle={{
@@ -286,7 +286,7 @@ export const CardDetails: React.FC = () => {
                                                 }}
                                                 itemStyle={{ color: '#fff' }}
                                                 labelStyle={{ color: '#64748b', marginBottom: '2px' }}
-                                                formatter={(value) => [`R$ ${value}`, 'Preço']}
+                                                formatter={(value: number) => [new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value), 'Preço']}
                                             />
                                             <Line
                                                 type="monotone"
@@ -311,64 +311,67 @@ export const CardDetails: React.FC = () => {
             </div>
 
             {/* Market Prices Card */}
-            <div className="card bg-slate-900 border-none mb-4 p-4 rounded-2xl">
-                <h3 className="font-bold text-base md:text-lg mb-3 border-b border-slate-800 pb-2 text-white flex items-center gap-2">
+            <div className="card bg-white dark:bg-slate-900 border-none mb-4 p-4 rounded-2xl">
+                <h3 className="font-bold text-base md:text-lg mb-3 border-b border-gray-200 dark:border-slate-800 pb-2 text-[var(--text-primary)] flex items-center gap-2">
                     <span className="text-emerald-500">$</span> Cotações (Hoje)
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {/* CK Buylist USD */}
-                    <div className="bg-slate-800 p-3 rounded-xl border border-slate-700">
-                        <h4 className="text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">CK (Cash)</h4>
-                        <div className="text-lg md:text-2xl font-bold text-white">
+                    {/* CK Buylist USD */}
+                    <div className="bg-[var(--inner-bg)] p-3 rounded-xl border border-[var(--inner-border)]">
+                        <h4 className="text-gray-500 dark:text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">CK (Cash)</h4>
+                        <div className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
                             {marketPrices?.ck_buylist_usd ?
                                 new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(marketPrices.ck_buylist_usd) :
-                                <span className="text-gray-600 text-base">---</span>
+                                <span className="text-gray-400 dark:text-gray-600 text-base">---</span>
                             }
                         </div>
-                        <div className="text-[10px] text-emerald-400 font-medium">USD</div>
+                        <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">USD</div>
                     </div>
 
                     {/* CK Buylist Credit */}
-                    <div className="bg-slate-800 p-3 rounded-xl border border-slate-700">
-                        <h4 className="text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">CK (Credit)</h4>
-                        <div className="text-lg md:text-2xl font-bold text-white">
+                    {/* CK Buylist Credit */}
+                    <div className="bg-[var(--inner-bg)] p-3 rounded-xl border border-[var(--inner-border)]">
+                        <h4 className="text-gray-500 dark:text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">CK (Credit)</h4>
+                        <div className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
                             {marketPrices?.ck_buylist_credit ?
                                 new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(marketPrices.ck_buylist_credit) :
-                                <span className="text-gray-600 text-base">---</span>
+                                <span className="text-gray-400 dark:text-gray-600 text-base">---</span>
                             }
                         </div>
-                        <div className="text-[10px] text-blue-400 font-medium">+30%</div>
+                        <div className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">+30%</div>
                     </div>
 
                     {/* LigaMagic Sell */}
-                    <div className="bg-slate-800 p-3 rounded-xl border border-slate-700 col-span-2 md:col-span-1">
-                        <h4 className="text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">LigaMagic</h4>
-                        <div className="text-lg md:text-2xl font-bold text-white">
+                    {/* LigaMagic Sell */}
+                    <div className="bg-[var(--inner-bg)] p-3 rounded-xl border border-[var(--inner-border)] col-span-2 md:col-span-1">
+                        <h4 className="text-gray-500 dark:text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">LigaMagic</h4>
+                        <div className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
                             {card.lm_sell_brl ?
                                 new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(card.lm_sell_brl) :
-                                <span className="text-gray-600 text-base">---</span>
+                                <span className="text-gray-400 dark:text-gray-600 text-base">---</span>
                             }
                         </div>
-                        <div className="text-[10px] text-amber-400 font-medium">BRL (Venda)</div>
+                        <div className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">BRL (Venda)</div>
                     </div>
                 </div>
             </div>
 
             {/* Bottom Section: Scryfall Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-12">
-                <div className="card bg-slate-900 border-none p-4">
-                    <div className="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
-                        <h3 className="font-bold text-lg text-white">Efeito / Texto</h3>
-                        <div className="flex gap-1 bg-slate-800 p-0.5 rounded-lg">
+                <div className="card bg-white dark:bg-slate-900 border-none p-4">
+                    <div className="flex justify-between items-center mb-4 border-b border-gray-200 dark:border-slate-800 pb-2">
+                        <h3 className="font-bold text-lg text-[var(--text-primary)]">Efeito / Texto</h3>
+                        <div className="flex gap-1 bg-[var(--inner-bg)] p-0.5 rounded-lg">
                             <button
                                 onClick={() => setLang('en')}
-                                className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${lang === 'en' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-gray-200'}`}
+                                className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${lang === 'en' ? 'bg-blue-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                             >
                                 EN
                             </button>
                             <button
                                 onClick={() => setLang('pt')}
-                                className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${lang === 'pt' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-gray-200'}`}
+                                className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${lang === 'pt' ? 'bg-blue-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
                             >
                                 PT
                             </button>
@@ -377,12 +380,12 @@ export const CardDetails: React.FC = () => {
                     {scryfallData ? (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between px-1">
-                                <span className="text-gray-400 text-sm italic">Custo de Mana:</span>
+                                <span className="text-gray-500 dark:text-gray-400 text-sm italic">Custo de Mana:</span>
                                 <div className="flex items-center">
                                     {renderManaSymbols(scryfallData.mana_cost)}
                                 </div>
                             </div>
-                            <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-800 text-gray-200 whitespace-pre-wrap leading-relaxed">
+                            <div className="p-4 bg-[var(--inner-bg)] rounded-xl border border-[var(--inner-border)] text-[var(--inner-text)] whitespace-pre-wrap leading-relaxed">
                                 {lang === 'pt' ? (scryfallData.printed_text || scryfallData.oracle_text) : scryfallData.oracle_text || 'Sem texto disponível.'}
                             </div>
                             {lang === 'pt' && !scryfallData.printed_text && (
@@ -396,18 +399,18 @@ export const CardDetails: React.FC = () => {
                     )}
                 </div>
 
-                <div className="card bg-slate-900 border-none p-4">
-                    <h3 className="font-bold text-lg mb-4 border-b border-slate-800 pb-2 text-white">Links Oficiais</h3>
+                <div className="card bg-white dark:bg-slate-900 border-none p-4">
+                    <h3 className="font-bold text-lg mb-4 border-b border-gray-200 dark:border-slate-800 pb-2 text-[var(--text-primary)]">Links Oficiais</h3>
                     <div className="space-y-3">
                         {card.link_ck && (
                             <a
                                 href={card.link_ck}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center justify-between p-3 bg-slate-800 border border-slate-700 rounded-xl hover:bg-slate-700 hover:border-blue-500 transition-all group"
+                                className="flex items-center justify-between p-3 bg-[var(--inner-bg)] border border-[var(--inner-border)] rounded-xl hover:brightness-110 transition-all group"
                             >
-                                <span className="font-medium text-gray-300">Card Kingdom (Buylist)</span>
-                                <ExternalLink size={16} className="text-gray-500 group-hover:text-blue-400" />
+                                <span className="font-medium text-gray-700 dark:text-gray-300">Card Kingdom (Buylist)</span>
+                                <ExternalLink size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-blue-400" />
                             </a>
                         )}
                         {card.link_lm && (
@@ -415,20 +418,20 @@ export const CardDetails: React.FC = () => {
                                 href={card.link_lm}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center justify-between p-3 bg-slate-800 border border-slate-700 rounded-xl hover:bg-slate-700 hover:border-blue-500 transition-all group"
+                                className="flex items-center justify-between p-3 bg-[var(--inner-bg)] border border-[var(--inner-border)] rounded-xl hover:brightness-110 transition-all group"
                             >
-                                <span className="font-medium text-gray-300">LigaMagic (Venda)</span>
-                                <ExternalLink size={16} className="text-gray-500 group-hover:text-blue-400" />
+                                <span className="font-medium text-gray-700 dark:text-gray-300">LigaMagic (Venda)</span>
+                                <ExternalLink size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-blue-400" />
                             </a>
                         )}
                         <a
                             href={`https://scryfall.com/card/${card.set_code}/${card.collector_number}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center justify-between p-3 bg-slate-800 border border-slate-700 rounded-xl hover:bg-slate-700 hover:border-blue-500 transition-all group"
+                            className="flex items-center justify-between p-3 bg-[var(--inner-bg)] border border-[var(--inner-border)] rounded-xl hover:brightness-110 transition-all group"
                         >
-                            <span className="font-medium text-gray-300">Scryfall</span>
-                            <ExternalLink size={16} className="text-gray-500 group-hover:text-blue-400" />
+                            <span className="font-medium text-gray-700 dark:text-gray-300">Scryfall</span>
+                            <ExternalLink size={16} className="text-gray-400 dark:text-gray-500 group-hover:text-blue-400" />
                         </a>
                     </div>
                 </div>

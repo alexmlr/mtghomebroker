@@ -50,10 +50,24 @@ export const useTracking = () => {
 
         try {
             if (isTracked) {
-                console.log("Attempting Delete...");
-                const { error, data } = await supabase.from('user_tracked_cards').delete().eq('user_id', user.id).eq('card_id', cardId).select();
+                console.log("Attempting Delete for card:", cardId, "User:", user.id);
+                // Explicitly selecting 'id' to confirm deletion
+                const { error, data, count } = await supabase
+                    .from('user_tracked_cards')
+                    .delete({ count: 'exact' })
+                    .eq('user_id', user.id)
+                    .eq('card_id', cardId)
+                    .select();
+
+                console.log("Delete result - Error:", error, "Data:", data, "Count:", count);
+
                 if (error) throw error;
-                console.log("Delete successful", data);
+                // If count is 0, it means RLS or filter prevented deletion
+                if (count === 0) {
+                    console.warn("Delete operation returned 0 rows affected. Possible RLS issue or record not found.");
+                    // Consider throwing error to revert optimistic update?
+                    // throw new Error("Delete failed (0 rows)");
+                }
             } else {
                 console.log("Attempting Insert...");
                 const { error, data } = await supabase.from('user_tracked_cards').insert({ user_id: user.id, card_id: cardId }).select();

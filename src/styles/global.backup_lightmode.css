@@ -9,31 +9,6 @@
   --text-primary: #ffffff;
   --text-secondary: #aab1bb;
   --danger: #fb7185;
-  --hover-bg: #2a2b30;
-  --btn-secondary-bg: #2a2b30;
-  --btn-secondary-text: #ffffff;
-  --inner-bg: #1e293b;
-  /* slate-800 */
-  --inner-border: #334155;
-  /* slate-700 */
-}
-
-:root[data-theme='light'] {
-  --app-bg: #eef0f2;
-  --sidebar-bg: #ffffff;
-  --icon-color: #64748b;
-  --border-color: #e2e8f0;
-  --header-bg: #ffffff;
-  --text-primary: #0f172a;
-  --text-secondary: #64748b;
-  --danger: #ef4444;
-  --hover-bg: #f1f5f9;
-  --btn-secondary-bg: #ffffff;
-  --btn-secondary-text: #0f172a;
-  --inner-bg: #f3f4f6;
-  /* gray-100 */
-  --inner-border: #e5e7eb;
-  /* gray-200 */
 }
 
 * {
@@ -220,7 +195,7 @@ body {
     left: 100%;
     margin-left: 12px;
     width: 260px;
-    background-color: var(--sidebar-bg);
+    background-color: #202125;
     border: 1px solid var(--border-color);
     border-radius: 12px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
@@ -272,11 +247,6 @@ body {
     background: transparent;
     color: var(--text-secondary);
     text-align: left;
-  }
-
-  .sidebar__user-menu-item:hover {
-    background-color: var(--hover-bg);
-    color: var(--text-primary);
   }
 }
 
@@ -449,13 +419,13 @@ body {
 }
 
 .btn-secondary {
-  background-color: var(--btn-secondary-bg);
-  color: var(--btn-secondary-text);
+  background-color: #2a2b30;
+  color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-  background-color: var(--hover-bg);
+  background-color: #3f3f46;
 }
 
 .search-box {
@@ -483,7 +453,7 @@ select,
 textarea {
   padding: 8px 16px 8px 40px;
   /* Increased left padding for icon */
-  background-color: var(--sidebar-bg);
+  background-color: #202125;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-primary);
@@ -523,7 +493,7 @@ textarea:focus {
 .table-container {
   width: 100%;
   overflow-x: auto;
-  background-color: var(--sidebar-bg);
+  background-color: #202125;
   border-radius: 12px;
   border: 1px solid var(--border-color);
   padding: 8px 8px 4px;
@@ -557,7 +527,7 @@ tr:last-child td {
 }
 
 tbody tr:hover td {
-  background-color: var(--hover-bg);
+  background-color: #1f2128;
 }
 
 .table-container a {
@@ -581,7 +551,7 @@ tbody tr:hover td {
   padding: 6px 12px;
   border-radius: 9999px;
   border: 1px solid var(--border-color);
-  background-color: var(--sidebar-bg);
+  background-color: #202125;
   color: var(--text-primary);
   font-size: 0.8rem;
   cursor: pointer;
@@ -593,7 +563,7 @@ tbody tr:hover td {
 }
 
 .pagination button:not(:disabled):hover {
-  background-color: var(--hover-bg);
+  background-color: #2a2b30;
 }
 
 .pagination span {

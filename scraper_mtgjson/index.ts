@@ -65,7 +65,7 @@ async function getCardMappings(): Promise<Map<string, number>> {
 
     // We'll fetch in chunks just in case.
     let from = 0;
-    const size = 1000;
+    const size = 1000; // Match Supabase default limit to avoid gaps
     let done = false;
 
     while (!done) {

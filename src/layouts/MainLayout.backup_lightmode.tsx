@@ -9,16 +9,12 @@ import {
   LogOut,
   Menu,
   List,
-  Sun,
-  Moon,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
 import { supabase } from '../lib/supabaseClient';
 
 export const MainLayout: React.FC = () => {
   const { user, role, signOut } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
@@ -161,19 +157,6 @@ export const MainLayout: React.FC = () => {
                   <User size={18} color="#aab1bb" />
                   <span>Meu Perfil</span>
                 </Link>
-
-                <button
-                  type="button"
-                  className="sidebar__user-menu-item"
-                  onClick={() => {
-                    toggleTheme();
-                    setIsUserMenuOpen(false);
-                  }}
-                >
-                  {theme === 'dark' ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} color="#aab1bb" />}
-                  <span>{theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>
-                </button>
-
                 <button
                   type="button"
                   className="sidebar__user-menu-item sidebar__user-menu-item--danger"
