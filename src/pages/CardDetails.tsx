@@ -256,7 +256,7 @@ export const CardDetails: React.FC = () => {
                                 </select>
                             </div>
 
-                            <div className="flex-1 min-h-[200px] md:min-h-[280px]">
+                            <div className="h-[300px] w-full">
                                 {filteredHistory.length > 0 ? (
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={filteredHistory}>
@@ -284,7 +284,11 @@ export const CardDetails: React.FC = () => {
                                                 activeDot={{ r: 5, strokeWidth: 0 }}
                                                 isAnimationActive={false}
                                             />
-                                            <Tooltip />
+                                            <Tooltip
+                                                contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#fff' }}
+                                                itemStyle={{ color: '#fff' }}
+                                                cursor={{ stroke: '#64748b', strokeWidth: 1 }}
+                                            />
                                         </LineChart>
                                     </ResponsiveContainer>
                                 ) : (
