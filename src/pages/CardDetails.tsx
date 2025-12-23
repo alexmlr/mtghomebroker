@@ -286,6 +286,8 @@ export const CardDetails: React.FC = () => {
                                                 }}
                                                 itemStyle={{ color: '#fff' }}
                                                 labelStyle={{ color: '#64748b', marginBottom: '2px' }}
+                                                cursor={{ stroke: '#64748b', strokeWidth: 1, strokeDasharray: '4 4' }}
+                                                wrapperStyle={{ zIndex: 1000 }}
                                                 formatter={(value: number | undefined) => [
                                                     value !== undefined ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : '---',
                                                     'Preço'
