@@ -284,23 +284,7 @@ export const CardDetails: React.FC = () => {
                                                 activeDot={{ r: 5, strokeWidth: 0 }}
                                                 isAnimationActive={false}
                                             />
-                                            <Tooltip
-                                                contentStyle={{
-                                                    backgroundColor: '#1e293b',
-                                                    borderColor: '#334155',
-                                                    color: '#f8fafc',
-                                                    borderRadius: '8px',
-                                                    fontSize: '12px',
-                                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                                                }}
-                                                itemStyle={{ color: '#f8fafc' }}
-                                                labelStyle={{ color: '#94a3b8', marginBottom: '4px' }}
-                                                cursor={{ stroke: '#94a3b8', strokeWidth: 1, strokeDasharray: '4 4' }}
-                                                formatter={(value: number | undefined) => [
-                                                    value !== undefined ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value) : '---',
-                                                    'Preço'
-                                                ]}
-                                            />
+                                            <Tooltip />
                                         </LineChart>
                                     </ResponsiveContainer>
                                 ) : (
