@@ -25,10 +25,11 @@ async function main() {
 
     try {
         for (const [index, card] of cards.entries()) {
-            console.log(`[${index + 1}/${cards.length}] Processing ${card.name}...`);
+            console.log(`[${index + 1}/${cards.length}] Processing ${card.name} (${card.set_code})...`);
 
             try {
-                const price = await scrapeLigaMagic(browser, card.liga_magic_url, card.is_foil);
+                // Pass set_code to scraper
+                const price = await scrapeLigaMagic(browser, card.liga_magic_url, card.is_foil, card.set_code);
 
                 if (price > 0) {
                     await updateLmPrice(card.id, card.mtgjson_uuid, price, card.liga_magic_url);

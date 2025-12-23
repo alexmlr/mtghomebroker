@@ -44,6 +44,7 @@ export interface CardToScrape {
     liga_magic_url: string;
     mtgjson_uuid: string | null;
     is_foil: boolean;
+    set_code: string;
 }
 
 export async function getTrackedCardsWithLmLink(): Promise<CardToScrape[]> {
@@ -68,7 +69,7 @@ export async function getTrackedCardsWithLmLink(): Promise<CardToScrape[]> {
     // Now fetch details for these cards, filtering by liga_magic_url presence
     const { data: cards, error: cardsError } = await supabase
         .from('all_cards')
-        .select('id, name, liga_magic_url, mtgjson_uuid, is_foil')
+        .select('id, name, liga_magic_url, mtgjson_uuid, is_foil, set_code')
         .in('id', trackedIds)
         .not('liga_magic_url', 'is', null)
         .neq('liga_magic_url', '');
