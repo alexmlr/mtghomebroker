@@ -34,7 +34,7 @@ export const LigaMagicModal: React.FC<LigaMagicModalProps> = ({ isOpen, onClose,
             }
 
             const { error: updateError } = await supabase
-                .from('cards')
+                .from('all_cards')
                 .update({ liga_magic_url: url })
                 .eq('id', cardId);
 

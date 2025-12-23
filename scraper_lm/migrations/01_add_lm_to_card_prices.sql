@@ -1,0 +1,3 @@
+ALTER TABLE public.card_prices 
+ADD COLUMN IF NOT EXISTS lm_price_brl NUMERIC,
+ADD COLUMN IF NOT EXISTS lm_last_update TIMESTAMP WITH TIME ZONE;

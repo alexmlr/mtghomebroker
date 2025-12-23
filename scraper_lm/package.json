@@ -1,0 +1,27 @@
+{
+    "name": "scraper-ligamagic",
+    "version": "1.0.0",
+    "description": "Scraper specific for LigaMagic",
+    "main": "dist/index.js",
+    "scripts": {
+        "start": "ts-node src/index.ts",
+        "build": "tsc"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "dependencies": {
+        "@supabase/supabase-js": "^2.39.0",
+        "axios": "^1.6.0",
+        "dotenv": "^16.3.1",
+        "puppeteer": "^24.31.0",
+        "puppeteer-extra": "^3.3.6",
+        "puppeteer-extra-plugin-stealth": "^2.11.2"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.0",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.3.2"
+    }
+}
