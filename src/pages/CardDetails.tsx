@@ -272,7 +272,7 @@ export const CardDetails: React.FC = () => {
                                                 axisLine={false}
                                                 tickLine={false}
                                                 tick={{ fill: '#64748b', fontSize: 10 }}
-                                                tickFormatter={(value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
+                                                tickFormatter={(value: any) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
                                                 width={80}
                                             />
                                             <Line
@@ -288,7 +288,7 @@ export const CardDetails: React.FC = () => {
                                                 contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#fff' }}
                                                 itemStyle={{ color: '#fff' }}
                                                 cursor={{ stroke: '#64748b', strokeWidth: 1 }}
-                                                formatter={(value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
+                                                formatter={(value: any) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
                                             />
                                         </LineChart>
                                     </ResponsiveContainer>
