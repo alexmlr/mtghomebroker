@@ -238,7 +238,7 @@ export const CardDetails: React.FC = () => {
                     </div>
 
                     {/* Right Layer: Chart */}
-                    <div className="lg:col-span-8">
+                    <div className="lg:col-span-8 mb-4">
                         <div className="card h-full flex flex-col bg-white dark:bg-slate-900 border-none p-3 md:p-6 rounded-2xl">
                             <div className="flex justify-between items-center mb-2">
                                 <h3 className="font-bold text-base md:text-lg flex items-center gap-2 text-[var(--text-primary)]">
@@ -288,6 +288,7 @@ export const CardDetails: React.FC = () => {
                                                 contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#fff' }}
                                                 itemStyle={{ color: '#fff' }}
                                                 cursor={{ stroke: '#64748b', strokeWidth: 1 }}
+                                                formatter={(value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
                                             />
                                         </LineChart>
                                     </ResponsiveContainer>
@@ -429,6 +430,6 @@ export const CardDetails: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

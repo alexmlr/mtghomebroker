@@ -48,29 +48,12 @@ export interface CardToScrape {
 }
 
 export async function getTrackedCardsWithLmLink(): Promise<CardToScrape[]> {
-    // Select distinct cards that are tracked and have a LigaMagic URL
-    // We use a raw query or join.
-    // simpler: select distinct card_id from user_tracked_cards, then fetch details.
+    // Select all cards that have a LigaMagic URL defined
+    // We ignore 'user_tracked_cards' join because we want to update price for ANY card that has a link.
 
-    // First, get distinct card IDs that are tracked
-    const { data: trackedData, error: trackedError } = await supabase
-        .from('user_tracked_cards')
-        .select('card_id');
-
-    if (trackedError) {
-        console.error('Error fetching tracked cards:', trackedError);
-        return [];
-    }
-
-    if (!trackedData || trackedData.length === 0) return [];
-
-    const trackedIds = [...new Set(trackedData.map(t => t.card_id))];
-
-    // Now fetch details for these cards, filtering by liga_magic_url presence
     const { data: cards, error: cardsError } = await supabase
         .from('all_cards')
         .select('id, name, liga_magic_url, mtgjson_uuid, is_foil, set_code')
-        .in('id', trackedIds)
         .not('liga_magic_url', 'is', null)
         .neq('liga_magic_url', '');
 

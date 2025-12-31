@@ -76,8 +76,8 @@ export async function scrapeLigaMagic(browser: Browser, url: string, isFoil: boo
 
             if (iconClicked) {
                 console.log('Edition icon found and clicked. Waiting for price update...');
-                // Wait a bit for JS to update DOM
-                await new Promise(r => setTimeout(r, 1500));
+                // Wait longer for JS to update DOM (AJAX can be slow)
+                await new Promise(r => setTimeout(r, 4000));
             } else {
                 console.warn(`Warning: Edition icon for ${setCode} not found. Using default.`);
             }

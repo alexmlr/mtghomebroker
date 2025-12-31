@@ -106,7 +106,7 @@ export const LigaMagicModal: React.FC<LigaMagicModalProps> = ({ isOpen, onClose,
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-visible transform transition-all border border-gray-100 dark:border-gray-700">
-                <div className="p-6 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                <div className="p-6 border-b border-gray-100 dark:border-gray-700 dark:bg-gray-800/50">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
                         <span className="text-purple-600">⚡</span> Vincular LigaMagic
                     </h3>

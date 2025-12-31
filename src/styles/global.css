@@ -400,6 +400,7 @@ body {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   transition: transform 0.3s ease;
   transform-origin: center center;
+  margin-top: 16px;
 }
 
 .grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4.gap-4 .card:hover {
