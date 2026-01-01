@@ -194,7 +194,7 @@ export const CardDetails: React.FC = () => {
     // Format currency helper
     const fmtUSD = (val?: number) => val ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val) : '---';
     const fmtEUR = (val?: number) => val ? new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(val) : '---';
-    const fmtBRL = (val?: number) => val ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val) : '---';
+
 
     if (loading) {
         return (

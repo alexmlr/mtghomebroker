@@ -132,7 +132,7 @@ export const EditCollectionModal: React.FC<EditCollectionModalProps> = ({ isOpen
 
     if (!isOpen || !originalCard) return null;
 
-    const selectedVariant = variants.find(v => v.id === selectedVariantId);
+
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">

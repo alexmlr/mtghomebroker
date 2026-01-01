@@ -26,7 +26,7 @@ export const ImportListModal: React.FC<ImportListModalProps> = ({ isOpen, onClos
     const [step, setStep] = useState<'input' | 'preview'>('input');
 
     // Tracking hook to add cards
-    const { toggleTrackCard, trackedCardIds } = useTracking();
+    const { trackedCardIds } = useTracking();
 
     if (!isOpen) return null;
 
