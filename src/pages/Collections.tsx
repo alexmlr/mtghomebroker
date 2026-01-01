@@ -16,6 +16,7 @@ interface CardData {
     collector_number: string;
     collector_number_normalized: string;
     price_updated_at: string;
+    is_foil: boolean;
 }
 
 export const Collections: React.FC = () => {
@@ -37,7 +38,7 @@ export const Collections: React.FC = () => {
     const itemsPerPage = 50;
 
     // Tracking
-    const { trackedCardIds, toggleTrackCard } = useTracking();
+    const { trackedCardIds, toggleTrackCard, trackedSetCodes, toggleTrackSet } = useTracking();
     const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // 1. Fetch Sets from DB
@@ -65,7 +66,7 @@ export const Collections: React.FC = () => {
             // Use View
             let query = supabase
                 .from('all_cards_with_prices')
-                .select('id, name, set_name, set_code, collector_number_normalized, collector_number, price_updated_at, ck_buylist_usd, ck_buylist_credit', { count: 'exact' });
+                .select('id, name, set_name, set_code, collector_number_normalized, collector_number, price_updated_at, ck_buylist_usd, ck_buylist_credit, is_foil', { count: 'exact' });
 
             // Set Filter (Using set_code, case insensitive)
             if (selectedSet) {
@@ -75,6 +76,9 @@ export const Collections: React.FC = () => {
             // Search (Global or filtered)
             if (searchTerm) {
                 query = query.ilike('name', `%${searchTerm}%`);
+            } else {
+                // Default: Only show cards with CK Price > 0 when not searching
+                query = query.gt('ck_buylist_usd', 0);
             }
 
             // Sorting
@@ -145,19 +149,46 @@ export const Collections: React.FC = () => {
 
     return (
         <div>
-            <div className="flex flex-col md:flex-row justify-start items-start md:items-center mb-2 gap-2">
-                <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2 gap-2">
+                <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto items-center">
                     {/* SET SELECTOR */}
-                    <select
-                        className="input text-[11px] w-full md:w-[250px] py-0 px-2"
-                        value={selectedSet}
-                        onChange={(e) => setSelectedSet(e.target.value)}
-                    >
-                        <option value="">Todas as coleções</option>
-                        {sets.map(s => (
-                            <option key={s.code} value={s.code}>{s.name} ({s.code.toUpperCase()})</option>
-                        ))}
-                    </select>
+                    <div className="flex items-center gap-2 w-full md:w-auto">
+                        <select
+                            className="input text-[11px] flex-1 md:w-[250px] py-0 px-2"
+                            value={selectedSet}
+                            onChange={(e) => setSelectedSet(e.target.value)}
+                        >
+                            <option value="">Todas as coleções</option>
+                            {sets.map(s => (
+                                <option key={s.code} value={s.code}>{s.name} ({s.code.toUpperCase()})</option>
+                            ))}
+                        </select>
+
+                        {selectedSet && (
+                            <button
+                                onClick={() => toggleTrackSet(selectedSet)}
+                                className={`
+                                    flex items-center gap-1 px-3 py-1.5 ml-2 rounded-md text-xs font-medium transition-colors border shadow-sm whitespace-nowrap
+                                    ${trackedSetCodes.has(selectedSet)
+                                        ? 'bg-blue-100 text-blue-700 border-blue-200 hover:bg-red-100 hover:text-red-700 hover:border-red-200'
+                                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                                    }
+                                `}
+                                title={trackedSetCodes.has(selectedSet) ? "Parar de acompanhar esta coleção" : "Acompanhar variações de preço desta coleção"}
+                            >
+                                {trackedSetCodes.has(selectedSet) ? (
+                                    <>
+                                        <span className="w-2 h-2 rounded-full bg-blue-500 mr-1"></span>
+                                        Seguindo
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>+ Acompanhar</span>
+                                    </>
+                                )}
+                            </button>
+                        )}
+                    </div>
 
                     {/* SEARCH BOX */}
                     <div className="relative w-full md:w-[250px]">
@@ -233,8 +264,26 @@ export const Collections: React.FC = () => {
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="text-secondary text-[9px] md:text-sm px-0.5 text-center md:text-left whitespace-nowrap md:whitespace-normal max-w-[60px] md:max-w-[200px] truncate">{card.set_name}</td>
-                                                <td className="text-gray-400 text-center text-[9px] md:text-sm">-</td>
+                                                <td className="text-secondary text-[9px] md:text-sm px-0.5 text-center md:text-left whitespace-nowrap md:whitespace-normal max-w-[60px] md:max-w-[200px]">
+                                                    <div className="flex items-center justify-between gap-1">
+                                                        <span className="truncate">{card.set_name}</span>
+                                                        <div className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex-shrink-0 scale-75 md:scale-100">
+                                                            <TrackButton
+                                                                type="set"
+                                                                isTracked={trackedSetCodes.has(card.set_code)}
+                                                                onToggle={(e) => {
+                                                                    e.stopPropagation();
+                                                                    toggleTrackSet(card.set_code);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="text-gray-400 text-center text-[9px] md:text-sm">
+                                                    {card.is_foil ? (
+                                                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-100 text-amber-700 font-bold uppercase tracking-wider">Foil</span>
+                                                    ) : '-'}
+                                                </td>
                                                 <td className="text-green-600 font-medium text-[9px] md:text-sm px-0.5">
                                                     {card.ck_buylist_usd > 0 ? formatUSD(card.ck_buylist_usd) : <span className="text-gray-300">---</span>}
                                                 </td>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { LayoutDashboard, Loader2, AlertCircle } from 'lucide-react';
@@ -12,6 +12,23 @@ export const Login: React.FC = () => {
     const [fullName, setFullName] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [message, setMessage] = useState<string | null>(null);
+    const [logo, setLogo] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchLogo = async () => {
+            const { data: files } = await supabase.storage.from('branding').list('system');
+            if (files && files.length > 0) {
+                const logoFile = files.find(f => f.name.startsWith('logo.'));
+                if (logoFile) {
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('branding')
+                        .getPublicUrl(`system/${logoFile.name}`);
+                    setLogo(publicUrl);
+                }
+            }
+        };
+        fetchLogo();
+    }, []);
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -67,7 +84,11 @@ export const Login: React.FC = () => {
                         color: 'var(--accent)',
                         marginBottom: '1rem'
                     }}>
-                        <LayoutDashboard size={32} />
+                        {logo ? (
+                            <img src={logo} alt="Logo" style={{ width: '150px', objectFit: 'contain' }} />
+                        ) : (
+                            <LayoutDashboard size={32} />
+                        )}
                     </div>
                     <h1 className="font-bold" style={{ fontSize: '1.5rem' }}>Boost Homebroker</h1>
                     <p className="text-secondary text-sm mt-2">

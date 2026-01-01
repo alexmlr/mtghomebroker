@@ -8,7 +8,7 @@ interface TrackButtonProps {
     className?: string;
 }
 
-export const TrackButton: React.FC<TrackButtonProps> = ({ isTracked, onToggle, className = '' }) => {
+export const TrackButton: React.FC<TrackButtonProps> = ({ isTracked, onToggle, type, className = '' }) => {
     return (
         <button
             onClick={onToggle}
@@ -16,7 +16,9 @@ export const TrackButton: React.FC<TrackButtonProps> = ({ isTracked, onToggle, c
                 inline-flex items-center justify-center rounded-md transition-all duration-200 border shadow-sm
                 ${isTracked
                     ? 'bg-blue-600 text-white border-blue-600 hover:bg-red-500 hover:border-red-500 opacity-100'
-                    : 'bg-white text-gray-400 border-gray-200 hover:border-blue-400 hover:text-blue-400 opacity-0 group-hover:opacity-100'
+                    : type === 'set'
+                        ? 'bg-white text-gray-400 border-gray-200 hover:border-blue-400 hover:text-blue-400 opacity-100'
+                        : 'bg-white text-gray-400 border-gray-200 hover:border-blue-400 hover:text-blue-400 opacity-0 group-hover:opacity-100'
                 }
                 ${className}
             `}

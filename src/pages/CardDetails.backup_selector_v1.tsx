@@ -11,7 +11,6 @@ import {
     Eye,
     Loader2
 } from 'lucide-react';
-import { SetSelector } from '../components/SetSelector';
 import {
     AreaChart,
     Area,
@@ -48,15 +47,6 @@ interface PriceHistory {
     source: string;
 }
 
-interface CardPrint {
-    id: number;
-    set_code: string;
-    set_name: string;
-    collector_number: string;
-    image_url: string | null;
-    name: string;
-}
-
 export const CardDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -66,10 +56,6 @@ export const CardDetails: React.FC = () => {
     const [priceSource, setPriceSource] = useState<'CardKingdom' | 'LigaMagic'>('CardKingdom');
     const [scryfallData, setScryfallData] = useState<any>(null);
     const [lang, setLang] = useState<'en' | 'pt'>('en');
-
-    // Selector State
-    const [prints, setPrints] = useState<CardPrint[]>([]);
-    const [previewImage, setPreviewImage] = useState<string | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -81,7 +67,6 @@ export const CardDetails: React.FC = () => {
     useEffect(() => {
         if (card) {
             fetchScryfallData(lang);
-            fetchPrints();
         }
     }, [card, lang]);
 
@@ -154,42 +139,6 @@ export const CardDetails: React.FC = () => {
         };
         if (card) fetchMarketPrices();
     }, [card]);
-
-    const fetchPrints = async () => {
-        if (!card) return;
-        console.log("Fetching prints for:", card.name);
-        try {
-            // Fetch all cards with same name to build the selector
-            // We use 'all_cards_with_prices' as we know it works
-            // Note: 'image_url' column might not exist in this view, so we skip it 
-            // and let SetSelector handle the image fetching via Scryfall.
-            const { data, error } = await supabase
-                .from('all_cards_with_prices')
-                .select('id, set_code, set_name, collector_number, name')
-                .eq('name', card.name)
-                .order('set_name');
-
-            if (error) {
-                console.error("Error fetching prints query:", error);
-                throw error;
-            }
-
-            console.log("Prints found:", data?.length, data);
-
-            if (data) {
-                // Remove duplicates if any (same set/collector number)
-                // Filter distinct by id
-                // Map to CardPrint interface (image_url will be undefined/null)
-                const printsData = data.map(d => ({
-                    ...d,
-                    image_url: null
-                }));
-                setPrints(printsData as CardPrint[]);
-            }
-        } catch (err) {
-            console.error("Error fetching prints:", err);
-        }
-    };
 
     // Format currency helper
     const fmtUSD = (val?: number) => val ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val) : '---';
@@ -271,49 +220,29 @@ export const CardDetails: React.FC = () => {
 
                 {/* Main Content Grid: Image & Chart */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-                    {/* Left Layer: Image and Selector */}
-                    <div className="lg:col-span-4 flex gap-4">
-                        {/* Selector Column */}
-                        <div className="flex-none pt-0">
-                            <SetSelector
-                                prints={prints}
-                                currentCardId={card.id}
-                                onHover={(url) => setPreviewImage(url)}
-                                onLeave={() => setPreviewImage(null)}
-                                onSelect={(newId) => navigate(`/carta/${newId}`)}
+                    {/* Left Layer: Image and Buttons */}
+                    <div className="lg:col-span-4 flex flex-col gap-3">
+                        <div className="card p-0 bg-transparent shadow-none border-none w-full mx-auto lg:mx-0 overflow-hidden md:max-w-[320px]">
+                            <img
+                                src={card.image_url || scryfallData?.image_uris?.normal || scryfallData?.image_uris?.large || 'https://placeholder.com/336x468?text=Imagem+indispon%C3%ADvel'}
+                                alt={card.name}
+                                className="w-full rounded-xl shadow-2xl transform transition-all hover:skew-y-0 duration-500"
                             />
                         </div>
 
-                        {/* Image & Buttons Column */}
-                        <div className="flex-1 flex flex-col gap-3">
-                            <div className="card p-0 bg-transparent shadow-none border-none w-full mx-auto lg:mx-0 overflow-hidden md:max-w-[320px]">
-                                <img
-                                    src={
-                                        previewImage ||
-                                        card.image_url ||
-                                        scryfallData?.image_uris?.normal ||
-                                        scryfallData?.image_uris?.large ||
-                                        'https://placeholder.com/336x468?text=Imagem+indispon%C3%ADvel'
-                                    }
-                                    alt={card.name}
-                                    className="w-full rounded-xl shadow-2xl transform transition-all hover:skew-y-0 duration-500"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-3 gap-2 w-full mx-auto lg:mx-0 md:max-w-[320px]">
-                                <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-1.5 h-auto" disabled>
-                                    <Eye size={16} className="mb-0.5 text-blue-500" />
-                                    <span className="text-[8px] uppercase font-bold text-gray-400">Watch</span>
-                                </button>
-                                <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-1.5 h-auto" disabled>
-                                    <PlusCircle size={16} className="mb-0.5 text-green-500" />
-                                    <span className="text-[8px] uppercase font-bold text-gray-400">Add</span>
-                                </button>
-                                <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-1.5 h-auto" disabled>
-                                    <Share2 size={16} className="mb-0.5 text-purple-500" />
-                                    <span className="text-[8px] uppercase font-bold text-gray-400">Share</span>
-                                </button>
-                            </div>
+                        <div className="grid grid-cols-3 gap-2 w-full mx-auto lg:mx-0 md:max-w-[320px]">
+                            <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-1.5 h-auto" disabled>
+                                <Eye size={16} className="mb-0.5 text-blue-500" />
+                                <span className="text-[8px] uppercase font-bold text-gray-400">Watch</span>
+                            </button>
+                            <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-1.5 h-auto" disabled>
+                                <PlusCircle size={16} className="mb-0.5 text-green-500" />
+                                <span className="text-[8px] uppercase font-bold text-gray-400">Add</span>
+                            </button>
+                            <button className="btn btn-ghost border border-gray-700 shadow-sm flex flex-col items-center py-1.5 h-auto" disabled>
+                                <Share2 size={16} className="mb-0.5 text-purple-500" />
+                                <span className="text-[8px] uppercase font-bold text-gray-400">Share</span>
+                            </button>
                         </div>
                     </div>
 

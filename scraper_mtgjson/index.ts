@@ -6,10 +6,17 @@ import * as path from 'path';
 // @ts-ignore
 import JSONStream from 'JSONStream';
 
-dotenv.config();
+const envPathLocal = path.resolve(__dirname, '.env');
+const envPathRoot = path.resolve(__dirname, '../.env');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY;
+// Try loading from root first, then local (local overrides)
+dotenv.config({ path: envPathRoot });
+dotenv.config({ path: envPathLocal });
+
+console.log(`Loaded env from: ${envPathRoot} and ${envPathLocal}`);
+
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
     console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY/SUPABASE_KEY in .env');
@@ -25,6 +32,9 @@ interface CardPrice {
     ck_buylist_credit: number | null;
     ck_buylist_foil_usd: number | null;
     ck_buylist_foil_credit: number | null;
+    tcgplayer_market_usd: number | null;
+    cardmarket_avg_eur: number | null;
+    mtgo_cardhoarder_tix: number | null;
 }
 
 interface PriceHistoryEntry {
@@ -43,15 +53,18 @@ interface PriceHistoryEntry {
 
 // 1. Fetch Exchange Rate (USD -> BRL)
 // Using a fallback if API fails or for simple testing.
-async function getUsdToBrlRate(): Promise<number> {
+async function getRates(): Promise<{ usd: number; eur: number }> {
     try {
         const response = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
-        const rate = response.data.rates.BRL;
-        if (rate) return rate;
+        const brl = response.data.rates.BRL;
+        const eur = response.data.rates.EUR;
+        // USD -> BRL = brl
+        // EUR -> BRL = brl / eur
+        if (brl && eur) return { usd: brl, eur: brl / eur };
     } catch (err) {
-        console.error('Error fetching exchange rate, using fallback 6.0', err);
+        console.error('Error fetching exchange rate, using fallback', err);
     }
-    return 6.0; // Fallback
+    return { usd: 6.0, eur: 6.5 }; // Fallback
 }
 
 // 2. Map MTGJSON UUIDs to Internal Card IDs
@@ -109,8 +122,8 @@ async function main() {
     // I will assume the user or I can fix it later if it errors. 
     // Actually, I can try to continue. If it fails insert, I'll know.
 
-    const rate = await getUsdToBrlRate();
-    console.log(`USD to BRL Rate: ${rate}`);
+    const rates = await getRates();
+    console.log(`USD to BRL Rate: ${rates.usd}, EUR to BRL Rate: ${rates.eur}`);
 
     const cardMap = await getCardMappings();
 
@@ -189,46 +202,53 @@ async function main() {
         // The user example showed: "normal": { "2025-12-19": 12.34 }
         // If so, we need to extract the value for "today" (or the only key present).
 
+        // Helper to extract price safely
+        const getPrice = (obj: any): number | null => {
+            if (!obj) return null;
+            if (typeof obj === 'number') return obj;
+            if (typeof obj === 'object') {
+                const vals = Object.values(obj);
+                if (vals.length > 0) return vals[0] as number;
+            }
+            return null;
+        }
+
+        // Card Kingdom extraction (existing logic simplified)
         let ck_buylist_usd: number | null = null;
         let ck_buylist_foil_usd: number | null = null;
-
-        // Extract Normal
-        if (buylist.normal) {
-            // It might be a number directly OR an object with date key
-            if (typeof buylist.normal === 'number') {
-                ck_buylist_usd = buylist.normal;
-            } else if (typeof buylist.normal === 'object') {
-                // Get the first value (should be only one for Today file?)
-                const vals = Object.values(buylist.normal);
-                if (vals.length > 0) ck_buylist_usd = vals[0] as number;
-            }
-        }
-
-        // Extract Foil
-        if (buylist.foil) {
-            if (typeof buylist.foil === 'number') {
-                ck_buylist_foil_usd = buylist.foil;
-            } else if (typeof buylist.foil === 'object') {
-                const vals = Object.values(buylist.foil);
-                if (vals.length > 0) ck_buylist_foil_usd = vals[0] as number;
-            }
-        }
-
-        // We assume we want USD.
-        // Credits???
-        // The prompt says "buylist em USD (dolares) e em créditos".
-        // Card Kingdom usually offers +30% for credit. MTGJSON usually only tracks the raw USD value.
-        // Does MTGJSON provde Credit price? 
-        // Checking MTGJSON docs/schema... usually they only provide the cash price.
-        // User said "capture ... da cardkingdom tanto da buylist em USD ... e em créditos".
-        // If MTGJSON doesn't have it, I should calculate it (typically +30%).
-        // I will attempt to look for it. If not found, I will calculate it.
-        // Strategy: Save USD. Calculate Credit = USD * 1.30.
+        if (buylist.normal) ck_buylist_usd = getPrice(buylist.normal);
+        if (buylist.foil) ck_buylist_foil_usd = getPrice(buylist.foil);
 
         const ck_buylist_credit = ck_buylist_usd ? ck_buylist_usd * 1.30 : null;
         const ck_buylist_foil_credit = ck_buylist_foil_usd ? ck_buylist_foil_usd * 1.30 : null;
 
-        if (ck_buylist_usd === null && ck_buylist_foil_usd === null) continue;
+        // TCGplayer Extraction (retail -> normal)
+        // Usually, TCGplayer market price is preferred. If MTGJSON provides 'market' key under retail?
+        // Checking doc: paper.tcgplayer.retail.normal.market?
+        // IF pData.paper.tcgplayer exists
+        let tcgplayer_market_usd: number | null = null;
+        const tcg = pData?.paper?.tcgplayer;
+        if (tcg && tcg.retail) {
+            // We try 'normal' first
+            if (tcg.retail.normal) tcgplayer_market_usd = getPrice(tcg.retail.normal);
+        }
+
+        // Cardmarket Extraction
+        let cardmarket_avg_eur: number | null = null;
+        const cm = pData?.paper?.cardmarket;
+        if (cm && cm.retail) {
+            if (cm.retail.normal) cardmarket_avg_eur = getPrice(cm.retail.normal);
+        }
+
+        // MTGO Cardhoarder
+        let mtgo_cardhoarder_tix: number | null = null;
+        const ch = pData?.mtgo?.cardhoarder;
+        if (ch && ch.retail) {
+            if (ch.retail.normal) mtgo_cardhoarder_tix = getPrice(ch.retail.normal);
+        }
+
+        // Check availability
+        if (ck_buylist_usd === null && ck_buylist_foil_usd === null && tcgplayer_market_usd === null && cardmarket_avg_eur === null) continue;
 
         // Add to Updates (Card Prices Table)
         updates.push({
@@ -236,41 +256,53 @@ async function main() {
             ck_buylist_usd,
             ck_buylist_credit,
             ck_buylist_foil_usd,
-            ck_buylist_foil_credit
+            ck_buylist_foil_credit,
+            tcgplayer_market_usd,
+            cardmarket_avg_eur,
+            mtgo_cardhoarder_tix
         });
 
         // Add to History (Price History Table)
-        // We need mapping
         const cardId = cardMap.get(uuid);
         if (cardId) {
-            // Prefer Normal price, fallback to Foil if normal is missing? 
-            // Or log both? "price_history" usually tracks "the price". 
-            // Existing scraper tracks "ck_buy_usd". Usually normal.
-            // If card is Foil Only? 
-            // Let's decide: If normal exists, use it. If not and foil exists, use foil?
-            // "price_history" logic: source='CardKingdom'. 
-            // I'll stick to Normal for now unless the card is foil-only (which I might not know easily without looking up 'is_foil' from card).
-            // But I have 'is_foil' in my mapping? I didn't select it.
-            // Let's assume Normal price for History for now.
+            const addHistory = (source: string, price: number | null, rate: number, currency: string) => {
+                if (price !== null) {
+                    historyEntries.push({
+                        card_id: cardId,
+                        source: source,
+                        price_type: 'retail', // TCG and Trend are retail usually
+                        price_raw: price,
+                        currency: currency,
+                        fx_rate_to_brl: rate,
+                        price_brl: price * rate, // Simple conversion
+                        scraped_at: now,
+                        created_at: now
+                    });
+                }
+            };
 
+            // CK History (keeping logic)
             if (ck_buylist_usd !== null) {
-                const priceBrl = (ck_buylist_usd * rate * 1.00) + 0.30; // 0.30 fee? reusing logic from plan.
-                // Wait, user provided snippet "price_brl: (usd * rate * 1.00 + 0.30)" in plan, but that was ME writing the plan.
-                // existing scraper uses: "ck_buy_brl: cardData.brl" -> "brl: (usd * rate) + fixed?"
-                // I'll stick to simple conversion for now.
-
                 historyEntries.push({
                     card_id: cardId,
                     source: 'CardKingdom',
                     price_type: 'buy',
                     price_raw: ck_buylist_usd,
                     currency: 'USD',
-                    fx_rate_to_brl: rate,
-                    price_brl: priceBrl,
+                    fx_rate_to_brl: rates.usd,
+                    price_brl: (ck_buylist_usd * rates.usd) + 0.30, // keeping fee logic
                     scraped_at: now,
                     created_at: now
                 });
             }
+
+            // TCGplayer
+            addHistory('TCGplayer', tcgplayer_market_usd, rates.usd, 'USD');
+
+            // Cardmarket
+            addHistory('Cardmarket', cardmarket_avg_eur, rates.eur, 'EUR');
+
+            // Note: Not adding Cardhoarder to history yet to save space/noise unless requested.
         }
     }
 
