@@ -3,55 +3,29 @@ import { supabase } from '../lib/supabaseClient';
 import { TrendingUp, DollarSign, Layers, ChevronRight } from 'lucide-react';
 import { useTracking } from '../hooks/useTracking';
 import { TrackButton } from '../components/TrackButton';
+import { Link } from 'react-router-dom';
 
 export const Dashboard: React.FC = () => {
     const [, setLoading] = useState(true);
     const [stats, setStats] = useState({
-        totalCollections: 0,
-        totalOpportunities: 0,
         usdRate: 0,
         eurRate: 0
     });
-    const [topOpportunities, setTopOpportunities] = useState<any[]>([]);
+    const [opportunityCount, setOpportunityCount] = useState(0);
+    const [trackedCardsSummary, setTrackedCardsSummary] = useState<any[]>([]);
 
     // Tracking
     const { trackedCardIds, trackedSetCodes, toggleTrackCard, toggleTrackSet } = useTracking();
 
     useEffect(() => {
         fetchDashboardData();
-    }, []);
+    }, [trackedCardIds]); // Re-fetch if tracked cards change
 
     const fetchDashboardData = async () => {
         try {
             setLoading(true);
 
-            // 1. Get Distinct Collections Count
-            // Fetch all collections to count unique names client-side (or use a distinct query if supported)
-            const { data: allCollections } = await supabase
-                .from('cards')
-                .select('set_name');
-
-            let uniqueCollectionsCount = 0;
-            if (allCollections) {
-                const uniqueCollections = new Set(allCollections.map(item => item.set_name));
-                uniqueCollectionsCount = uniqueCollections.size;
-            }
-
-            // 2. Get Opportunities Count (mock logic for now as variation_percentage is missing)
-            // We'll just count cards with high buy price for now as a placeholder or 0
-            const { count: oppCount } = await supabase
-                .from('cards')
-                .select('*', { count: 'exact', head: true })
-                .gt('ck_buy_usd', 50); // Example threshold for "opportunity"
-
-            // 3. Get Top Opportunities (Now Top Expensive Cards)
-            const { data: opps } = await supabase
-                .from('cards')
-                .select('*')
-                .order('ck_buy_usd', { ascending: false })
-                .limit(5);
-
-            // 4. Fetch Real-time Currency Rates from exchangerate-api.com
+            // 1. Fetch Real-time Currency Rates
             let usd = 5.34;  // Fallback value
             let eur = 6.19;  // Fallback value
 
@@ -71,17 +45,40 @@ export const Dashboard: React.FC = () => {
                 }
             } catch (error) {
                 console.error('Error fetching exchange rates:', error);
-                // Uses fallback values if API fails
             }
 
             setStats({
-                totalCollections: uniqueCollectionsCount,
-                totalOpportunities: oppCount || 0,
                 usdRate: usd,
                 eurRate: eur
             });
 
-            if (opps) setTopOpportunities(opps);
+            // 2. Fetch Tracked Cards for Opportunities & Summary
+            const { data: cards } = await supabase
+                .from('my_tracked_cards_view')
+                .select('*');
+
+            if (cards) {
+                // Calculate Opportunities (ROI >= 20%)
+                let oppCount = 0;
+                cards.forEach(item => {
+                    const ckUsd = item.ck_buylist_usd || 0;
+                    const lmBrl = item.lm_sell_brl || 0;
+                    if (ckUsd > 0 && lmBrl > 0) {
+                        const revenue = (ckUsd * usd) - 0.30;
+                        const profit = revenue - lmBrl;
+                        const roi = profit / lmBrl;
+                        if (roi >= 0.20 && profit > 0.01) oppCount++;
+                    }
+                });
+                setOpportunityCount(oppCount);
+
+                // Prepare Summary Table (Top 5 Most Expensive Tracked Cards)
+                // Filter out cards with 0 price if possible, or just sort all
+                const sorted = [...cards]
+                    .sort((a, b) => (b.ck_buylist_usd || 0) - (a.ck_buylist_usd || 0))
+                    .slice(0, 5);
+                setTrackedCardsSummary(sorted);
+            }
 
         } catch (error) {
             console.error('Error fetching dashboard data:', error);
@@ -89,6 +86,9 @@ export const Dashboard: React.FC = () => {
             setLoading(false);
         }
     };
+
+    const formatBRL = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+
     return (
         <div className="p-4 md:p-6 space-y-6">
             {/* Stats Grid */}
@@ -99,8 +99,8 @@ export const Dashboard: React.FC = () => {
                             <Layers size={16} />
                         </div>
                         <div className="overflow-hidden min-w-0">
-                            <p className="text-[9px] md:text-sm text-[var(--text-secondary)] truncate leading-tight">Coleções</p>
-                            <p className="text-sm md:text-2xl font-bold truncate leading-tight">{stats.totalCollections}</p>
+                            <p className="text-[9px] md:text-sm text-[var(--text-secondary)] truncate leading-tight">Coleções Monitoradas</p>
+                            <p className="text-sm md:text-2xl font-bold truncate leading-tight">{trackedSetCodes.size}</p>
                         </div>
                     </div>
                 </div>
@@ -111,7 +111,7 @@ export const Dashboard: React.FC = () => {
                         </div>
                         <div className="overflow-hidden min-w-0">
                             <p className="text-[9px] md:text-sm text-[var(--text-secondary)] truncate leading-tight">Oportunidades</p>
-                            <p className="text-sm md:text-2xl font-bold truncate leading-tight">{stats.totalOpportunities}</p>
+                            <p className="text-sm md:text-2xl font-bold truncate leading-tight">{opportunityCount}</p>
                         </div>
                     </div>
                 </div>
@@ -139,13 +139,13 @@ export const Dashboard: React.FC = () => {
                 </div>
             </div>
 
-            {/* Top Opportunities Section */}
+            {/* Tracked Cards Summary Section */}
             <div className="card">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-sm md:text-base font-bold uppercase tracking-wide">Top Cartas (USD)</h2>
-                    <button className="btn btn-secondary p-1.5 rounded-lg" title="Ver Todas">
+                    <h2 className="text-sm md:text-base font-bold uppercase tracking-wide">Cards que eu acompanho</h2>
+                    <Link to="/minha-lista" className="btn btn-secondary p-1.5 rounded-lg" title="Ver Minha Lista">
                         <ChevronRight size={16} />
-                    </button>
+                    </Link>
                 </div>
 
                 <div className="table-container">
@@ -154,14 +154,14 @@ export const Dashboard: React.FC = () => {
                             <tr>
                                 <th className="text-[10px] md:text-xs">Coleção</th>
                                 <th className="text-[10px] md:text-xs">Nome</th>
-                                <th className="text-[10px] md:text-xs">Preço (USD)</th>
-                                <th className="text-[10px] md:text-xs">Status</th>
+                                <th className="text-[10px] md:text-xs text-right">Compra (LM)</th>
+                                <th className="text-[10px] md:text-xs text-right">Venda (CK)</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {topOpportunities.length > 0 ? (
-                                topOpportunities.map((item, index) => (
-                                    <tr key={index} className="group hover:bg-gray-50">
+                            {trackedCardsSummary.length > 0 ? (
+                                trackedCardsSummary.map((item, index) => (
+                                    <tr key={index} className="group hover:bg-gray-50 cursor-pointer">
                                         <td className="font-medium relative text-xs md:text-sm">
                                             <div className="flex items-center gap-2">
                                                 <span className="truncate max-w-[80px] md:max-w-[150px]">{item.set_name}</span>
@@ -177,7 +177,7 @@ export const Dashboard: React.FC = () => {
                                         </td>
                                         <td className="relative text-xs md:text-sm">
                                             <div className="flex items-center gap-2">
-                                                <span className="truncate max-w-[100px] md:max-w-[200px]">{item.name}</span>
+                                                <span className="truncate max-w-[100px] md:max-w-[200px]" title={item.name}>{item.name}</span>
                                                 <TrackButton
                                                     type="card"
                                                     isTracked={trackedCardIds.has(item.id)}
@@ -188,18 +188,20 @@ export const Dashboard: React.FC = () => {
                                                 />
                                             </div>
                                         </td>
-                                        <td className="text-xs md:text-sm">${item.ck_buy_usd}</td>
-                                        <td>
-                                            <span className="px-1.5 py-0.5 rounded-full text-[10px] md:text-xs font-bold bg-[rgba(48,209,88,0.1)] text-[var(--success)]">
-                                                Alta
-                                            </span>
+                                        <td className="text-xs md:text-sm text-right">
+                                            {item.lm_sell_brl > 0 ? formatBRL(item.lm_sell_brl) : '-'}
+                                        </td>
+                                        <td className="text-xs md:text-sm text-right">
+                                            <div className="flex items-center justify-end gap-1">
+                                                <span>${item.ck_buylist_usd?.toFixed(2) || '0.00'}</span>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
                                     <td colSpan={4} className="text-center py-8 text-[var(--text-secondary)] text-sm">
-                                        Nenhuma carta encontrada no momento.
+                                        Você ainda não está monitorando nenhuma carta.
                                     </td>
                                 </tr>
                             )}
