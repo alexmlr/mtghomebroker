@@ -292,10 +292,25 @@ export const CardDetails: React.FC = () => {
                                         previewImage ||
                                         card.image_url ||
                                         scryfallData?.image_uris?.normal ||
-                                        scryfallData?.image_uris?.large ||
+                                        scryfallData?.card_faces?.[0]?.image_uris?.normal || // Handle DFCs
                                         'https://placeholder.com/336x468?text=Imagem+indispon%C3%ADvel'
                                     }
                                     alt={card.name}
+                                    onError={(e) => {
+                                        const target = e.currentTarget;
+                                        const placeholder = 'https://placeholder.com/336x468?text=Imagem+indispon%C3%ADvel';
+
+                                        if (target.src === placeholder) return;
+
+                                        // Helper to find Scryfall image
+                                        const sfImage = scryfallData?.image_uris?.normal || scryfallData?.card_faces?.[0]?.image_uris?.normal;
+
+                                        if (sfImage && target.src !== sfImage) {
+                                            target.src = sfImage;
+                                        } else {
+                                            target.src = placeholder;
+                                        }
+                                    }}
                                     className="w-full rounded-xl shadow-2xl transform transition-all hover:skew-y-0 duration-500"
                                 />
                             </div>
@@ -404,7 +419,7 @@ export const CardDetails: React.FC = () => {
                     {/* CK Buylist USD */}
                     <div className="bg-[var(--inner-bg)] p-3 rounded-xl border border-[var(--inner-border)]">
                         <h4 className="text-gray-500 dark:text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">CK (Cash)</h4>
-                        <div className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
+                        <div className="text-lg md:text-2xl font-bold text-[var(--text-primary)]">
                             {marketPrices?.ck_buylist_usd ?
                                 new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(marketPrices.ck_buylist_usd) :
                                 <span className="text-gray-400 dark:text-gray-600 text-base">---</span>
@@ -417,7 +432,7 @@ export const CardDetails: React.FC = () => {
                     {/* CK Buylist Credit */}
                     <div className="bg-[var(--inner-bg)] p-3 rounded-xl border border-[var(--inner-border)]">
                         <h4 className="text-gray-500 dark:text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">CK (Credit)</h4>
-                        <div className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
+                        <div className="text-lg md:text-2xl font-bold text-[var(--text-primary)]">
                             {marketPrices?.ck_buylist_credit ?
                                 new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(marketPrices.ck_buylist_credit) :
                                 <span className="text-gray-400 dark:text-gray-600 text-base">---</span>
@@ -430,7 +445,7 @@ export const CardDetails: React.FC = () => {
                     {/* LigaMagic Sell */}
                     <div className="bg-[var(--inner-bg)] p-3 rounded-xl border border-[var(--inner-border)] col-span-2 md:col-span-1">
                         <h4 className="text-gray-500 dark:text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">LigaMagic</h4>
-                        <div className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
+                        <div className="text-lg md:text-2xl font-bold text-[var(--text-primary)]">
                             {card.lm_sell_brl ?
                                 new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(card.lm_sell_brl) :
                                 <span className="text-gray-400 dark:text-gray-600 text-base">---</span>
@@ -442,7 +457,7 @@ export const CardDetails: React.FC = () => {
                     {/* TCGplayer Market */}
                     <div className="bg-[var(--inner-bg)] p-3 rounded-xl border border-[var(--inner-border)]">
                         <h4 className="text-gray-500 dark:text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">TCGplayer</h4>
-                        <div className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
+                        <div className="text-lg md:text-2xl font-bold text-[var(--text-primary)]">
                             {marketPrices?.tcgplayer_market_usd ? fmtUSD(marketPrices.tcgplayer_market_usd) : <span className="text-gray-400 dark:text-gray-600 text-base">---</span>}
                         </div>
                         <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Market (USD)</div>
@@ -451,7 +466,7 @@ export const CardDetails: React.FC = () => {
                     {/* Cardmarket Avg */}
                     <div className="bg-[var(--inner-bg)] p-3 rounded-xl border border-[var(--inner-border)]">
                         <h4 className="text-gray-500 dark:text-gray-400 text-[9px] md:text-xs font-bold uppercase tracking-wider mb-0.5">Cardmarket</h4>
-                        <div className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
+                        <div className="text-lg md:text-2xl font-bold text-[var(--text-primary)]">
                             {marketPrices?.cardmarket_avg_eur ? fmtEUR(marketPrices.cardmarket_avg_eur) : <span className="text-gray-400 dark:text-gray-600 text-base">---</span>}
                         </div>
                         <div className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">Avg (EUR)</div>

@@ -9,6 +9,7 @@ import { LigaMagicModal } from '../components/LigaMagicModal';
 import { ImportListModal } from '../components/ImportListModal';
 import { EditCollectionModal } from '../components/EditCollectionModal';
 
+
 interface CardData {
     id: number;
     set_name: string;
@@ -339,9 +340,12 @@ const TrackedTable: React.FC<TrackedTableProps> = ({ title, viewName, emptyMessa
 
 export const MyList: React.FC = () => {
     const [importModalOpen, setImportModalOpen] = useState(false);
+    const { trackedCardIds } = useTracking();
 
     return (
         <div>
+            <div className="h-2"></div>
+
             <TrackedTable
                 title="Cartas que eu acompanho"
                 viewName="my_tracked_cards_view"

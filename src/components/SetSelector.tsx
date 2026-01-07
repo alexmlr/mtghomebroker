@@ -32,13 +32,19 @@ const SetIcon: React.FC<{ print: CardPrint; isSelected: boolean }> = ({ print, i
         );
     }
 
+    // Use theme-aware conditional logic if Tailwind dark: modifier is being stubborn in this context
+    // But dark:invert SHOULD work if 'dark' class is on HTML.
+    // Let's add !important via inline style or custom class if needed, or check if 'grayscale' conflicts.
+    // 'grayscale' and 'invert' can coexist.
+    // Trying a more explicit approach for dark mode visibility.
     return (
         <img
             src={`https://svgs.scryfall.io/sets/${print.set_code}.svg`}
             alt={print.set_name}
             className={`
-                w-5 h-5 object-contain filter 
+                w-5 h-5 object-contain 
                 ${isSelected ? 'brightness-125 drop-shadow-md' : 'grayscale group-hover:grayscale-0'}
+                set-icon-dark
                 transition-all duration-300
             `}
             onError={() => setError(true)}

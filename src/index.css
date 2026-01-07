@@ -54,6 +54,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -65,4 +66,56 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-wrap {
+  position: relative;
+  overflow: hidden;
+  height: 24px;
+  background-color: #1e293b; /* Slate 800 */
+  color: white;
+  display: flex;
+  align-items: center;
+}
+
+.ticker-content {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 40s linear infinite;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.ticker-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: #0f172a; /* Slate 900 */
+    color: #94a3b8;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 10px;
+    font-weight: 700;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Pause animation on hover */
+.ticker-wrap:hover .ticker-content {
+  animation-play-state: paused;
 }

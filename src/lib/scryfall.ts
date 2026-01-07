@@ -6,7 +6,14 @@ interface ScryfallCard {
         large: string;
         png: string;
     };
-    // Add other fields if necessary, but we only need image_uris for now
+    card_faces?: Array<{
+        image_uris?: {
+            normal: string;
+            small: string;
+            large: string;
+            png: string;
+        };
+    }>;
 }
 
 /**
@@ -29,7 +36,18 @@ export const getScryfallImageUrl = async (set_code: string, collector_number: st
         }
 
         const data: ScryfallCard = await response.json();
-        return data.image_uris?.normal || null;
+
+        // Handle normal cards
+        if (data.image_uris?.normal) {
+            return data.image_uris.normal;
+        }
+
+        // Handle Double-Faced Cards (images are inside card_faces)
+        if (data.card_faces && data.card_faces.length > 0 && data.card_faces[0].image_uris?.normal) {
+            return data.card_faces[0].image_uris.normal;
+        }
+
+        return null;
 
     } catch (error) {
         console.error('Error fetching Scryfall image:', error);

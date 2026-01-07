@@ -15,6 +15,10 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { supabase } from '../lib/supabaseClient';
+import { Ticker } from '../components/Ticker';
+import type { TickerItem } from '../components/Ticker';
+import { useTracking } from '../hooks/useTracking';
+import { format, subDays } from 'date-fns';
 
 export const MainLayout: React.FC = () => {
   const { user, role, signOut } = useAuth();
@@ -34,6 +38,97 @@ export const MainLayout: React.FC = () => {
     fetchSystemSettings();
     if (user) fetchUserProfile();
   }, [user]);
+
+  // Ticker Logic
+  const { trackedCardIds } = useTracking();
+  const [tickerItems, setTickerItems] = useState<TickerItem[]>([]);
+
+  useEffect(() => {
+    const fetchTickerData = async () => {
+      const idsArray = Array.from(trackedCardIds);
+      if (idsArray.length === 0) {
+        setTickerItems([]);
+        return;
+      }
+
+      try {
+        const { data: cards, error: cardsError } = await supabase
+          .from('all_cards_with_prices')
+          .select('id, name, ck_buylist_usd, is_foil')
+          .in('id', idsArray);
+
+        if (cardsError) throw cardsError;
+
+        const sevenDaysAgo = subDays(new Date(), 90).toISOString();
+        const { data: history, error: historyError } = await supabase
+          .from('price_history')
+          .select('card_id, price_raw, price_brl, scraped_at')
+          .in('card_id', idsArray)
+          .eq('source', 'CardKingdom')
+          // .eq('currency', 'USD') // Removed to support older data
+          .gte('scraped_at', sevenDaysAgo)
+          .order('scraped_at', { ascending: false });
+
+        if (historyError) throw historyError;
+
+        const items: TickerItem[] = [];
+
+        cards?.forEach(card => {
+          // Sort history explicitly just in case
+          const cardHistory = (history?.filter(h => h.card_id === card.id) || [])
+            .sort((a, b) => new Date(b.scraped_at).getTime() - new Date(a.scraped_at).getTime());
+
+          if (cardHistory.length === 0) return;
+
+          // Strategy: Use the most recent history entry for both Price (Display) and Calc basis
+          const latestEntry = cardHistory[0];
+          const currentPrice = latestEntry.price_raw; // Display USD
+          const currentBasis = latestEntry.price_brl; // Calc % in BRL (since it seems to have more variance/data)
+
+          if (!currentPrice) return;
+
+          const latestDateStr = format(new Date(latestEntry.scraped_at), 'yyyy-MM-dd');
+
+          // Find the most recent entry strictly before the latest entry date
+          let prevEntry = cardHistory.find(h => {
+            const hDate = format(new Date(h.scraped_at), 'yyyy-MM-dd');
+            return hDate < latestDateStr;
+          });
+
+          // Fallback: If no previous day data found, use the oldest available in the window
+          if (!prevEntry && cardHistory.length > 1) {
+            prevEntry = cardHistory[cardHistory.length - 1];
+          }
+
+          let percentChange = 0;
+          // Calculate percentage change using the Basis (BRL) if available, falling back to raw if BRL is 0
+          const prevBasis = prevEntry?.price_brl || prevEntry?.price_raw;
+          const currCalc = currentBasis || currentPrice;
+
+          if (prevEntry && prevBasis > 0) {
+            percentChange = ((currCalc - prevBasis) / prevBasis) * 100;
+          }
+
+          // Force update name if needed? No, card.name is fine.
+
+          items.push({
+            id: card.id,
+            name: card.name,
+            priceUsd: currentPrice,
+            percentChange: percentChange,
+            isFoil: card.is_foil
+          });
+        });
+
+        setTickerItems(items);
+
+      } catch (err) {
+        console.error("Error fetching ticker data:", err);
+      }
+    };
+
+    fetchTickerData();
+  }, [trackedCardIds]);
 
   const fetchSystemSettings = async () => {
     try {
@@ -229,6 +324,9 @@ export const MainLayout: React.FC = () => {
 
           <h1 className="layout-header__title text-sm md:text-2xl">{getPageTitle()}</h1>
         </header>
+
+        {/* TICKER GLOBAL */}
+        {tickerItems.length > 0 && <Ticker items={tickerItems} />}
 
         {/* CONTEÚDO DA PÁGINA - Margens Condicionais */}
         <div className={`layout-content ${location.pathname === '/' ? 'p-0' : 'p-[10px]'} pb-20 md:p-8 md:pb-8`}>

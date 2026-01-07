@@ -619,3 +619,67 @@ tbody tr:hover td {
 }
 
 /* Removed duplicate search-box definition */
+
+/* Ticker Animation & Styles */
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-wrap {
+  position: relative;
+  overflow: hidden;
+  height: 24px;
+  background-color: #1e293b;
+  /* Fallback */
+  background-color: var(--inner-bg);
+  /* Use theme variable */
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.ticker-content {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 40s linear infinite;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.ticker-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: var(--sidebar-bg);
+  color: var(--text-secondary);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-right: 1px solid var(--border-color);
+}
+
+/* Pause animation on hover */
+/* Set Icon Dark Mode Fix */
+.dark .set-icon-dark {
+  filter: invert(1) brightness(200%);
+}
